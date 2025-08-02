@@ -1,0 +1,65 @@
+@import "tailwindcss";
+@tailwind utilities;
+@custom-variant dark (&:where(.dark, .dark *));
+
+@theme {
+  /*Light Theme*/
+  --color-main: 	#FAFAFA;
+  --color-secondary: #E5E7EB;
+  --color-accent: #695bfd;
+  --color-accent-hovered: #322a8d;
+  --color-heading: #070606;
+  --color-subtext: #71747e;
+
+  /*Dark Theme*/
+  --color-main-dark: #121212;
+  --color-secondary-dark: #222222;
+  --color-accent-dark: #15cefc;
+  --color-accent-hovered-dark: #217286;
+  --color-heading-dark: #fdfffe;
+  --color-subtext-dark: #928d8d;
+}
+
+@layer utilities {
+  ::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  /*Light Theme*/
+  ::-webkit-scrollbar-track {
+    border-radius: 8px;
+    background: var(--color-secondary);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: var(--color-accent);
+    border-radius: 8px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent-hovered);
+  }
+
+  /*Dark Theme*/
+  .dark ::-webkit-scrollbar-track {
+    border-radius: 8px;
+    background: var(--color-secondary-dark);
+  }
+
+  .dark ::-webkit-scrollbar-thumb {
+    background: var(--color-accent-dark);
+    border-radius: 8px;
+  }
+
+  .dark ::-webkit-scrollbar-thumb:hover {
+    background: var(--color-accent-hovered-dark);
+  }
+}
+
+:root {
+  font-family: "JetBrains Mono", Arial, sans-serif;
+}
+
+body {
+  overflow-x: hidden;
+}
