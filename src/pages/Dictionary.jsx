@@ -28,6 +28,7 @@ const Dictionary = () => {
   const formattedDate = DateCreated.toLocaleDateString("en-US").slice(0, 8);
 
   const [words, setWords] = useState([]);
+  const [total, setTotal] = useState(0);
   const [dup, setDupState] = useState(false);
   const [SelectedTags, setSelectedTags] = useState([]);
   const [SelectedTypes, setSelectedTypes] = useState([]);
@@ -65,10 +66,13 @@ const Dictionary = () => {
   useEffect(() => {
     const fetchWords = async () => {
       const querySnapshot = await getDocs(collection(db, "words"));
+      const totalWord = querySnapshot.size;
       const wordList = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
+
+      setTotal(totalWord);
       setWords(wordList);
     };
 
@@ -282,8 +286,13 @@ const Dictionary = () => {
         className={`${open && "opacity-30"} dark:bg-main-dark bg-main grid h-screen w-screen overflow-hidden transition-all duration-300 lg:pl-20`}
       >
         <div className="relative flex h-full flex-col items-center justify-center gap-8 px-4">
-          <div className="text-heading dark:text-heading-dark text-2xl font-semibold text-nowrap md:text-3xl">
-            English Dictionary
+          <div className="flex flex-col items-center gap-2">
+            <div className="text-accent dark:text-accent-dark text-2xl lg:text-4xl font-semibold text-nowrap md:text-3xl">
+              English Dictionary
+            </div>
+            <span className="text-heading dark:text-heading-dark">
+              Total number of words: {total}
+            </span>
           </div>
           <div className="flex gap-2">
             <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center space-x-3 rounded-md border-2 px-4 py-2.5 text-2xl">
@@ -332,7 +341,9 @@ const Dictionary = () => {
                         })}
                     </div>
                     <div className="flex flex-col justify-center gap-2">
-                      <p className={`text-heading text-balance dark:text-heading-dark line-clamp-2 font-[Poppins] text-2xl font-semibold ${word.name.length <= 10 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}>
+                      <p
+                        className={`text-heading dark:text-heading-dark line-clamp-2 font-[Poppins] text-2xl font-semibold text-balance ${word.name.length <= 10 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
+                      >
                         {word.name}
                       </p>
 
