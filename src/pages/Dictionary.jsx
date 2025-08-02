@@ -332,7 +332,7 @@ const Dictionary = () => {
                         })}
                     </div>
                     <div className="flex flex-col justify-center gap-2">
-                      <p className="text-heading dark:text-heading-dark line-clamp-2 font-[Poppins] text-2xl font-semibold">
+                      <p className={`text-heading text-balance dark:text-heading-dark line-clamp-2 font-[Poppins] text-2xl font-semibold ${word.name.length <= 10 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}>
                         {word.name}
                       </p>
 
