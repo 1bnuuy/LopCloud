@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useReducer, useRef } from "react";
 import {
   faSearch,
   faTrash,
@@ -20,20 +20,87 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase";
 
+const initialState = {
+  words: [],
+  selectedTags: [],
+  selectedTypes: [],
+  dup: false,
+  search: "",
+  open: false,
+};
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case "FETCH_WORD":
+      return { ...state, words: action.payload }; //...state keeps everything else unrelated to action.payload's target
+
+    case "SELECT_TYPES":
+      return {
+        ...state,
+        selectedTypes: state.selectedTypes.includes(action.payload)
+          ? state.selectedTypes.filter((tag) => tag !== action.payload)
+          : [...state.selectedTypes, action.payload],
+      };
+
+    case "SELECT_TAGS":
+      return {
+        ...state,
+        selectedTags: state.selectedTags.includes(action.payload)
+          ? state.selectedTags.filter((tag) => tag !== action.payload)
+          : [...state.selectedTags, action.payload],
+      };
+
+    case "SUBMIT_WORD":
+      return { ...state, words: [...state.words, action.payload]};
+
+    case "FAVORITE":
+      return {
+        ...state,
+        words: state.words.map((w) =>
+          w.id === action.payload ? { ...w, favorite: !w.favorite } : w,
+        ),
+      };
+
+    case "DELETE":
+      return {
+        ...state,
+        words: state.words.filter((w) => w.id !== action.payload),
+      };
+
+    case "RESET_FORM":
+      return { ...state, selectedTags: [], selectedTypes: [], dup: false };
+
+    case "DUPLICATED":
+      return { ...state, dup: action.payload };
+
+    case "SEARCH":
+      return { ...state, search: action.payload };
+
+    case "OPEN_FORM":
+      return { ...state, open: !state.open };
+
+    case "ROLLBACK":
+      const rw = [...state.words];
+      rw.splice(action.index, 0, action.payload);
+
+      return { ...state, words: rw };
+
+    default:
+      return state;
+  }
+};
+
 const Dictionary = () => {
   const Name = useRef();
   const Link = useRef();
 
-  const DateCreated = new Date();
-  const formattedDate = DateCreated.toLocaleDateString("en-US").slice(0, 8);
+  const DateCreated = new Date().toLocaleDateString("en-GB", {
+  day: "2-digit",
+  month: "2-digit",
+  year: "numeric",
+});
 
-  const [words, setWords] = useState([]);
-  const [total, setTotal] = useState(0);
-  const [dup, setDupState] = useState(false);
-  const [SelectedTags, setSelectedTags] = useState([]);
-  const [SelectedTypes, setSelectedTypes] = useState([]);
-  const [search, setSearch] = useState("");
-  const [open, setOpen] = useState(false);
+  const [state, dispatch] = useReducer(reducer, initialState);
 
   const tagColors = {
     A1: "bg-lime-200",
@@ -58,63 +125,35 @@ const Dictionary = () => {
     "phrasal verb",
   ];
 
-  const Dialog = () => {
-    setOpen(!open);
-  };
-
-  //Fetch words on load
+  //Fetch words
   useEffect(() => {
     const fetchWords = async () => {
       const querySnapshot = await getDocs(collection(db, "words"));
-      const totalWord = querySnapshot.size;
       const wordList = querySnapshot.docs.map((doc) => ({
         id: doc.id,
         ...doc.data(),
       }));
 
-      setTotal(totalWord);
-      setWords(wordList);
+      dispatch({ type: "FETCH_WORD", payload: wordList });
     };
 
     fetchWords();
   }, []);
 
-  //Handle tag checkboxes
-  const checkHandlerTag = (e) => {
-    const value = e.target.value;
-
-    if (e.target.checked) {
-      setSelectedTags((prev) => [...prev, value]);
-    } else {
-      setSelectedTags((prev) => prev.filter((tag) => tag !== value));
-    }
-  };
-
-  //Handle type checkboxes
-  const checkHandlerType = (e) => {
-    const value = e.target.value;
-
-    if (e.target.checked) {
-      setSelectedTypes((prev) => [...prev, value]);
-    } else {
-      setSelectedTypes((prev) => prev.filter((type) => type !== value));
-    }
-  };
-
-  //POST new words to db.json
+  //POST
   const Create = async (e) => {
     e.preventDefault();
 
     const newWord = {
-      tag: SelectedTags,
+      tag: state.selectedTags,
       name: Name.current.value.trim(),
-      type: SelectedTypes,
-      date: formattedDate,
+      type: state.selectedTypes,
+      date: DateCreated,
       link: Link.current.value.trim(),
       favorite: false,
     };
 
-    if (SelectedTags.length && Name.current.value && Link.current.value) {
+    if (state.selectedTags.length && Name.current.value && Link.current.value) {
       const wordsRef = collection(db, "words");
       const q = query(
         wordsRef,
@@ -123,71 +162,78 @@ const Dictionary = () => {
       const querySnapshot = await getDocs(q);
 
       if (!querySnapshot.empty) {
-        setDupState(!dup);
+        dispatch({ type: "DUPLICATED", payload: true });
         return;
       }
 
       try {
         const docRef = await addDoc(collection(db, "words"), newWord);
-        setWords((prev) => [...prev, { id: docRef.id, ...newWord }]);
+        dispatch({
+          type: "SUBMIT_WORD",
+          payload: { id: docRef.id, ...newWord },
+        });
+
+        // Reset form
+        dispatch({ type: "RESET_FORM" });
+        Name.current.value = "";
+        Link.current.value = "";
+
+        document.querySelectorAll("input[type=checkbox]").forEach((el) => {
+          el.checked = false;
+        });
       } catch (err) {
-        console.log("Nah");
+        console.log("An error has occurred while creating your word :< ", err);
       }
-
-      setSelectedTags([]);
-      setSelectedTypes([]);
-      Name.current.value = "";
-      Link.current.value = "";
-
-      document.querySelectorAll("input[type=checkbox]").forEach((el) => {
-        el.checked = false;
-      });
     }
   };
 
-  //Favourite new words to db.json
+  //Favorite
   const Favor = async (word) => {
+    //update UI immediately
+    dispatch({ type: "FAVORITE", payload: word.id });
+
     try {
       const wordRef = doc(db, "words", word.id);
       await updateDoc(wordRef, {
         favorite: !word.favorite,
       });
-
-      setWords((prevWords) =>
-        prevWords.map((w) =>
-          w.id === word.id ? { ...w, favorite: !w.favorite } : w,
-        ),
-      );
     } catch (err) {
       console.error("Couldn't favorite word");
+      setTimeout(() => {
+        dispatch({ type: "FAVORITE", payload: word.id }); //rollback
+      }, 500);
     }
   };
 
-  //Delete from db.json
-  const Delete = async (id) => {
+  //Delete
+  const Delete = async (word, index) => {
+    dispatch({ type: "DELETE", payload: word.id });
     try {
-      await deleteDoc(doc(db, "words", id));
-      setWords((prev) => prev.filter((w) => w.id !== id));
+      await deleteDoc(doc(db, "words", word.id));
     } catch (err) {
       console.error("Couldn't delete word");
+      setTimeout(() => {
+        dispatch({ type: "ROLLBACK", payload: word, index });
+      }, 500);
     }
   };
 
-  //Search bar
-  const filteredWords = words.filter((item) => {
-    return item.name?.toLowerCase().includes(search.toLowerCase());
-  });
+  //Search
+  const filteredWords = useMemo(() => {
+    return state.words.filter((item) => {
+      return item.name?.toLowerCase().includes(state.search.toLowerCase());
+    });
+  }, [state.words, state.search]);
 
   return (
     <>
-      <form
-        onSubmit={Create}
-        className={`${open ? "z-50 -translate-y-1/2 opacity-100" : "-z-10 -translate-y-3/4 opacity-0"} bg-secondary dark:bg-secondary-dark fixed top-1/2 left-1/2 flex w-3/4 max-w-[650px] min-w-[200px] -translate-x-1/2 flex-col justify-center gap-8 rounded-md p-5 transition-all duration-500`}
+      <div
+        className={`${state.open ? "z-50 -translate-y-1/2 opacity-100" : "-z-10 -translate-y-3/4 opacity-0"} bg-secondary dark:bg-secondary-dark fixed top-1/2 left-1/2 flex w-3/4 max-w-[650px] min-w-[200px] -translate-x-1/2 flex-col justify-center gap-8 rounded-md p-5 transition-all duration-500`}
       >
         <FontAwesomeIcon
           icon={faXmark}
           className="text-main bg-accent dark:bg-accent-dark dark:text-main-dark hover:text-accent-hovered dark:hover:text-accent-hovered-dark ml-auto cursor-pointer rounded-md px-1 py-1.75 text-2xl transition-all duration-300"
-          onClick={Dialog}
+          onClick={() => dispatch({ type: "OPEN_FORM" })}
         />
 
         <div className="relative flex flex-wrap gap-2">
@@ -201,7 +247,9 @@ const Dictionary = () => {
             >
               <input
                 type="checkbox"
-                onChange={checkHandlerTag}
+                onChange={(e) =>
+                  dispatch({ type: "SELECT_TAGS", payload: e.target.value })
+                }
                 value={tag}
                 className="peer absolute top-1/2 left-0 size-full -translate-y-1/2 cursor-pointer appearance-none"
               />
@@ -219,15 +267,15 @@ const Dictionary = () => {
             required
             ref={Name}
             onChange={() => {
-              setDupState(false);
+              dispatch({ type: "DUPLICATED", payload: false });
             }}
             placeholder="Funny"
             type="text"
-            className={`placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full rounded-md border-2 px-4 pt-4 pb-3 text-xl outline-none ${dup ? "border-red-500" : "border-accent dark:border-accent-dark"}`}
+            className={`placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full rounded-md border-2 px-4 pt-4 pb-3 text-xl outline-none ${state.dup ? "border-red-500" : "border-accent dark:border-accent-dark"}`}
           />
 
           <span
-            className={`${dup ? "block" : "hidden"} px-3 py-1 text-lg text-red-500`}
+            className={`${state.dup ? "block" : "hidden"} px-3 py-1 text-lg text-red-500`}
           >
             ⚠︎ This word already exists!
           </span>
@@ -249,7 +297,9 @@ const Dictionary = () => {
             >
               <input
                 type="checkbox"
-                onChange={checkHandlerType}
+                onChange={(e) =>
+                  dispatch({ type: "SELECT_TYPES", payload: e.target.value })
+                }
                 value={type}
                 className="peer absolute top-1/2 left-0 size-full -translate-y-1/2 cursor-pointer appearance-none"
               />
@@ -264,7 +314,7 @@ const Dictionary = () => {
           <input
             required
             ref={Link}
-            placeholder="dictionary/english/funny"
+            placeholder="dictionary/english/..."
             type="text"
             className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark border-accent dark:border-accent-dark w-full rounded-md border-2 px-4 pt-4 pb-3 text-xl outline-none"
           />
@@ -276,30 +326,33 @@ const Dictionary = () => {
 
         <button
           className="text-main hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark dark:text-main-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold transition-all duration-500"
-          type="submit"
+          type="button"
+          onClick={Create}
         >
           Create Word!
         </button>
-      </form>
+      </div>
 
       <section
-        className={`${open && "opacity-30"} dark:bg-main-dark bg-main grid h-screen w-screen overflow-hidden transition-all duration-300 lg:pl-20`}
+        className={`${state.open && "opacity-30"} dark:bg-main-dark bg-main grid h-screen w-screen overflow-hidden transition-all duration-300 lg:pl-25`}
       >
         <div className="relative flex h-full flex-col items-center justify-center gap-8 px-4">
           <div className="flex flex-col items-center gap-2">
-            <div className="text-accent dark:text-accent-dark text-2xl lg:text-4xl font-semibold text-nowrap md:text-3xl">
+            <div className="text-accent dark:text-accent-dark text-2xl font-semibold text-nowrap md:text-3xl lg:text-4xl">
               English Dictionary
             </div>
             <span className="text-heading dark:text-heading-dark">
-              Total number of words: {total}
+              Total number of words: {state.words.length}
             </span>
           </div>
           <div className="flex gap-2">
             <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center space-x-3 rounded-md border-2 px-4 py-2.5 text-2xl">
               <input
                 placeholder="Search..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={state.search}
+                onChange={(e) =>
+                  dispatch({ type: "SEARCH", payload: e.target.value })
+                }
                 type="text"
                 className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full outline-none"
               />
@@ -310,7 +363,7 @@ const Dictionary = () => {
             </div>
 
             <button
-              onClick={Dialog}
+              onClick={() => dispatch({ type: "OPEN_FORM" })} //Wrap dispatch in a function to hinder infinite re-render loop
               className="text-main dark:text-main-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md px-5 text-2xl"
             >
               Add
@@ -370,7 +423,7 @@ const Dictionary = () => {
                       </span>
                       <a
                         target="_blank"
-                        href={`https://dictionary.cambridge.org/${word.link}`}
+                        href={`https://dictionary.cambridge.org/dictionary/english/${word.link}`}
                         className="ml-auto flex items-center"
                       >
                         <FontAwesomeIcon
@@ -379,7 +432,7 @@ const Dictionary = () => {
                         />
                       </a>
 
-                      <button type="button" onClick={() => Delete(word.id)}>
+                      <button type="button" onClick={() => Delete(word, index)}>
                         <FontAwesomeIcon
                           icon={faTrash}
                           className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-red-500"

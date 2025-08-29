@@ -39,7 +39,7 @@ const nav = ({ pathname, ThemeDark, ThemeToggle }) => {
   return (
     <>
       <nav
-        className={`bg-secondary dark:border-accent-dark border-accent dark:bg-secondary-dark fixed left-0 z-50 flex h-20 w-screen items-start justify-between gap-5 px-6 py-4 text-nowrap transition-all duration-300 ease-in-out select-none max-lg:bottom-0 max-lg:rounded-t-2xl max-lg:border-t-3 max-sm:justify-center lg:top-0 lg:h-screen lg:w-20 lg:flex-col lg:justify-start lg:rounded-r-2xl lg:border-r-3 lg:px-4 lg:py-15 ${ThemeDark ? "dark" : ""}`}
+        className={`bg-secondary dark:bg-secondary-dark fixed max-lg:left-1/2 left-4 max-lg:-translate-x-1/2 z-50 flex h-18 w-10/12 items-start max-lg:items-center justify-between gap-5 px-6 text-nowrap transition-all duration-300 ease-in-out select-none max-lg:bottom-4 max-sm:justify-center lg:top-1/2 lg:-translate-y-1/2 lg:h-10/12 lg:w-20 lg:flex-col lg:justify-start rounded-md lg:px-4 lg:py-15 ${ThemeDark ? "dark" : ""}`}
       >
         <div className="relative flex items-center justify-center gap-6 max-sm:hidden">
           <FontAwesomeIcon
@@ -68,7 +68,7 @@ const nav = ({ pathname, ThemeDark, ThemeToggle }) => {
                   {link.icon && (
                     <div className="relative flex">
                       <span
-                        className={`absolute ${link.path === pathname ? "block" : "hidden"} bg-accent dark:bg-accent-dark -top-4 h-1.25 w-full cursor-auto max-lg:rounded-b-full lg:top-0 lg:-left-4 lg:h-full lg:w-1.25 lg:rounded-r-full`}
+                        className={`absolute ${link.path === pathname ? "block" : "hidden"} bg-accent dark:bg-accent-dark -top-3 h-1.25 w-full cursor-auto max-lg:rounded-b-full lg:top-0 lg:-left-4 lg:h-full lg:w-1.25 lg:rounded-r-full`}
                       ></span>
                       <FontAwesomeIcon
                         icon={link.icon}
