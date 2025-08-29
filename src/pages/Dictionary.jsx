@@ -51,7 +51,7 @@ const reducer = (state, action) => {
       };
 
     case "SUBMIT_WORD":
-      return { ...state, words: [...state.words, action.payload]};
+      return { ...state, words: [...state.words, action.payload] };
 
     case "FAVORITE":
       return {
@@ -95,20 +95,20 @@ const Dictionary = () => {
   const Link = useRef();
 
   const DateCreated = new Date().toLocaleDateString("en-GB", {
-  day: "2-digit",
-  month: "2-digit",
-  year: "numeric",
-});
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
 
   const [state, dispatch] = useReducer(reducer, initialState);
 
   const tagColors = {
-    A1: "bg-lime-200",
+    A1: "bg-green-200",
     A2: "bg-green-500",
-    B1: "bg-purple-300",
-    B2: "bg-yellow-500",
-    C1: "bg-blue-400",
-    C2: "bg-red-400",
+    B1: "bg-pink-200",
+    B2: "bg-pink-500",
+    C1: "bg-indigo-400",
+    C2: "bg-purple-600",
   };
 
   const wordType = [
@@ -153,7 +153,7 @@ const Dictionary = () => {
       favorite: false,
     };
 
-    if (state.selectedTags.length && Name.current.value && Link.current.value) {
+    if (Name.current.value && Link.current.value) {
       const wordsRef = collection(db, "words");
       const q = query(
         wordsRef,
@@ -236,14 +236,11 @@ const Dictionary = () => {
           onClick={() => dispatch({ type: "OPEN_FORM" })}
         />
 
-        <div className="relative flex flex-wrap gap-2">
-          <span className="text-heading dark:text-heading-dark mt-auto text-xl transition-all duration-300">
-            Tags:
-          </span>
+        <div className="relative flex flex-wrap gap-3">
           {Object.entries(tagColors).map(([tag, color]) => (
             <div
               key={tag}
-              className={`text-heading relative mt-8 w-12 rounded-sm px-2 py-0.5 text-center font-semibold select-none ${color}`}
+              className={`text-heading relative w-12 text-center font-semibold select-none`}
             >
               <input
                 type="checkbox"
@@ -251,12 +248,16 @@ const Dictionary = () => {
                   dispatch({ type: "SELECT_TAGS", payload: e.target.value })
                 }
                 value={tag}
-                className="peer absolute top-1/2 left-0 size-full -translate-y-1/2 cursor-pointer appearance-none"
+                className="peer absolute top-1/2 left-0 z-50 size-full -translate-y-1/2 cursor-pointer appearance-none"
               />
-              <span>{tag}</span>
+              <span
+                className={`transition duration-300 peer-checked:opacity-30 ${color} inline-block size-full rounded-sm px-2 py-0.5`}
+              >
+                {tag}
+              </span>
               <FontAwesomeIcon
                 icon={faCheck}
-                className="text-accent dark:text-accent-dark absolute -top-0 left-1/2 -z-10 -translate-x-1/2 text-xl opacity-0 transition-all duration-200 peer-checked:-top-7 peer-checked:opacity-100"
+                className="text-accent dark:text-accent-dark absolute left-1/2 z-10 -translate-x-1/2 text-2xl opacity-0 transition duration-300 peer-checked:opacity-100"
               />
             </div>
           ))}
@@ -280,16 +281,12 @@ const Dictionary = () => {
             ⚠︎ This word already exists!
           </span>
 
-          <span className="bg-secondary dark:bg-secondary-dark text-heading dark:text-heading-dark absolute -top-3 left-5 px-2.5 transition-all duration-500 select-none">
+          <span className="bg-secondary dark:bg-secondary-dark text-heading dark:text-heading-dark absolute -top-3 left-5 px-2.5 transition duration-500 select-none">
             Word
           </span>
         </div>
 
         <div className="relative flex flex-wrap gap-2">
-          <span className="text-heading dark:text-heading-dark mt-auto text-xl transition-all duration-300">
-            Type(s):
-          </span>
-
           {wordType.map((type, index) => (
             <div
               key={index}
@@ -303,7 +300,7 @@ const Dictionary = () => {
                 value={type}
                 className="peer absolute top-1/2 left-0 size-full -translate-y-1/2 cursor-pointer appearance-none"
               />
-              <span className="peer-checked:bg-accent peer-checked:text-main dark:peer-checked:text-main-dark dark:peer-checked:bg-accent-dark bg-subtext dark:bg-subtext-dark rounded-sm px-2 py-0.5 transition-all duration-300">
+              <span className="peer-checked:bg-accent peer-checked:text-main dark:peer-checked:text-main-dark dark:peer-checked:bg-accent-dark bg-subtext dark:bg-subtext-dark rounded-sm px-2 py-0.5 transition duration-300">
                 {type}
               </span>
             </div>
@@ -319,17 +316,17 @@ const Dictionary = () => {
             className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark border-accent dark:border-accent-dark w-full rounded-md border-2 px-4 pt-4 pb-3 text-xl outline-none"
           />
 
-          <span className="bg-secondary dark:bg-secondary-dark text-heading dark:text-heading-dark absolute -top-3 left-5 px-2.5 transition-all duration-500 select-none">
+          <span className="bg-secondary dark:bg-secondary-dark text-heading dark:text-heading-dark absolute -top-3 left-5 px-2.5 transition duration-500 select-none">
             Link
           </span>
         </div>
 
         <button
-          className="text-main hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark dark:text-main-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold transition-all duration-500"
+          className="text-main hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark dark:text-main-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold transition duration-500"
           type="button"
           onClick={Create}
         >
-          Create Word!
+          Create
         </button>
       </div>
 
@@ -377,18 +374,22 @@ const Dictionary = () => {
                 return (
                   <div
                     key={index}
-                    className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex h-60 w-71 flex-col justify-between border-b-4 p-4"
+                    className="bg-secondary group dark:bg-secondary-dark border-accent dark:border-accent-dark relative flex h-60 w-71 flex-col justify-between border-b-4 p-4"
                   >
                     <div className="flex gap-2">
-                      {(Array.isArray(word.tag) ? word.tag : [word.tag])
+                      {(Array.isArray(word.tag) && word.tag.length > 0
+                        ? word.tag
+                        : ["N/A"]
+                      )
+                        .filter(Boolean) //removes null/undefined/empty strings
                         .sort((a, b) => a.localeCompare(b))
                         .map((t, i) => {
                           return (
                             <span
-                              className={`${tagColors[t]} text-heading rounded-sm px-2 font-semibold`}
+                              className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold`}
                               key={i}
                             >
-                              {t}
+                              {t || "N/A"}
                             </span>
                           );
                         })}
@@ -397,7 +398,8 @@ const Dictionary = () => {
                       <p
                         className={`text-heading dark:text-heading-dark line-clamp-2 font-[Poppins] text-2xl font-semibold text-balance ${word.name.length <= 10 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
                       >
-                        {word.name}
+                        {word.name.charAt(0).toUpperCase() +
+                          word.name.slice(1).toLowerCase()}
                       </p>
 
                       <div className="flex flex-wrap">
