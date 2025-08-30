@@ -127,17 +127,30 @@ const Dictionary = () => {
 
   //Fetch words
   useEffect(() => {
-    const fetchWords = async () => {
-      const querySnapshot = await getDocs(collection(db, "words"));
-      const wordList = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
+    let isLoaded = true;
 
-      dispatch({ type: "FETCH_WORD", payload: wordList });
-    };
+    async function fetchWords() {
+      try {
+        const querySnapshot = await getDocs(collection(db, "words"));
+
+        if (!isLoaded) return;
+
+        const wordList = querySnapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+
+        dispatch({ type: "FETCH_WORD", payload: wordList });
+      } catch (error) {
+        console.log("Failed to fetch your words!");
+      }
+    }
 
     fetchWords();
+
+    return () => {
+      isLoaded = false;
+    };
   }, []);
 
   //POST
@@ -368,89 +381,99 @@ const Dictionary = () => {
           </div>
 
           <div className="z-30 grid h-2/3 max-h-[660px] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:grid-cols-2 xl:grid-cols-3">
-            {filteredWords
-              .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
-              .map((word, index) => {
-                return (
-                  <div
-                    key={index}
-                    className="bg-secondary group dark:bg-secondary-dark border-accent dark:border-accent-dark relative flex h-60 w-71 flex-col justify-between border-b-4 p-4"
-                  >
-                    <div className="flex gap-2">
-                      {(Array.isArray(word.tag) && word.tag.length > 0
-                        ? word.tag
-                        : ["N/A"]
-                      )
-                        .filter(Boolean) //removes null/undefined/empty strings
-                        .sort((a, b) => a.localeCompare(b))
-                        .map((t, i) => {
-                          return (
-                            <span
-                              className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold`}
-                              key={i}
-                            >
-                              {t || "N/A"}
-                            </span>
-                          );
-                        })}
-                    </div>
-                    <div className="flex flex-col justify-center gap-2">
-                      <p
-                        className={`text-heading dark:text-heading-dark line-clamp-2 font-[Poppins] text-2xl font-semibold text-balance ${word.name.length <= 10 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
+            {filteredWords.length === 0
+              ? (
+                <div className="flex relative justify-between select-none w-70 text-4xl">
+                      <span className="rotate-y-180">🐇</span>
+                      <span className="absolute animate-carrot">🥕</span>
+                      <span>🐇</span>
+                </div>
+              ) : filteredWords
+                  .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
+                  .map((word, index) => {
+                    return (
+                      <div
+                        key={index}
+                        className="bg-secondary group dark:bg-secondary-dark border-accent dark:border-accent-dark relative flex h-60 w-71 flex-col justify-between border-b-4 p-4"
                       >
-                        {word.name.charAt(0).toUpperCase() +
-                          word.name.slice(1).toLowerCase()}
-                      </p>
+                        <div className="flex gap-2">
+                          {(Array.isArray(word.tag) && word.tag.length > 0
+                            ? word.tag
+                            : ["N/A"]
+                          )
+                            .filter(Boolean) //removes null/undefined/empty strings
+                            .sort((a, b) => a.localeCompare(b))
+                            .map((t, i) => {
+                              return (
+                                <span
+                                  className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold`}
+                                  key={i}
+                                >
+                                  {t || "N/A"}
+                                </span>
+                              );
+                            })}
+                        </div>
+                        <div className="flex flex-col justify-center gap-2">
+                          <p
+                            className={`text-heading dark:text-heading-dark line-clamp-2 font-[Poppins] text-2xl font-semibold text-balance ${word.name.length <= 10 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
+                          >
+                            {word.name.charAt(0).toUpperCase() +
+                              word.name.slice(1).toLowerCase()}
+                          </p>
 
-                      <div className="flex flex-wrap">
-                        {(Array.isArray(word.type)
-                          ? word.type
-                          : [word.type]
-                        ).map((t, i, arr) => {
-                          return (
-                            <span
-                              className={`text-subtext dark:text-subtext-dark px-1 text-sm font-semibold`}
-                              key={i}
-                            >
-                              {t}
-                              {i < arr.length - 1 && ","}
-                            </span>
-                          );
-                        })}
+                          <div className="flex flex-wrap">
+                            {(Array.isArray(word.type)
+                              ? word.type
+                              : [word.type]
+                            ).map((t, i, arr) => {
+                              return (
+                                <span
+                                  className={`text-subtext dark:text-subtext-dark px-1 text-sm font-semibold`}
+                                  key={i}
+                                >
+                                  {t}
+                                  {i < arr.length - 1 && ","}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-subtext dark:text-subtext-dark">
+                            {word.date}
+                          </span>
+                          <a
+                            target="_blank"
+                            href={`https://dictionary.cambridge.org/dictionary/english/${word.link}`}
+                            className="ml-auto flex items-center"
+                          >
+                            <FontAwesomeIcon
+                              icon={faLink}
+                              className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-blue-500"
+                            />
+                          </a>
+
+                          <button
+                            type="button"
+                            onClick={() => Delete(word, index)}
+                          >
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-red-500"
+                            />
+                          </button>
+
+                          <button type="button" onClick={() => Favor(word)}>
+                            <FontAwesomeIcon
+                              icon={faStar}
+                              className={`cursor-pointer text-xl transition-all ${word.favorite ? "text-yellow-300" : "text-heading dark:text-heading-dark hover:text-yellow-300"}`}
+                            />
+                          </button>
+                        </div>
                       </div>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <span className="text-subtext dark:text-subtext-dark">
-                        {word.date}
-                      </span>
-                      <a
-                        target="_blank"
-                        href={`https://dictionary.cambridge.org/dictionary/english/${word.link}`}
-                        className="ml-auto flex items-center"
-                      >
-                        <FontAwesomeIcon
-                          icon={faLink}
-                          className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-blue-500"
-                        />
-                      </a>
-
-                      <button type="button" onClick={() => Delete(word, index)}>
-                        <FontAwesomeIcon
-                          icon={faTrash}
-                          className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-red-500"
-                        />
-                      </button>
-
-                      <button type="button" onClick={() => Favor(word)}>
-                        <FontAwesomeIcon
-                          icon={faStar}
-                          className={`cursor-pointer text-xl transition-all ${word.favorite ? "text-yellow-300" : "text-heading dark:text-heading-dark hover:text-yellow-300"}`}
-                        />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
+                    );
+                  })}
           </div>
         </div>
       </section>
