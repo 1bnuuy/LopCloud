@@ -54,7 +54,7 @@ const nav = ({ pathname, ThemeDark, ThemeToggle }) => {
 
         <span className="bg-subtext dark:bg-subtext-dark hidden h-0.75 w-12 lg:block"></span>
 
-        <div className="flex gap-4 lg:flex-col">
+        <div className="flex gap-4 max-xs:gap-3 lg:flex-col">
           {links.map((link, index) => {
             return (
               <div
@@ -92,7 +92,7 @@ const nav = ({ pathname, ThemeDark, ThemeToggle }) => {
 
         <span className="bg-subtext dark:bg-subtext-dark hidden h-0.75 w-12 lg:block"></span>
 
-        <div className="max-sm:bg-secondary max-sm:border-accent max-sm:dark:border-accent-dark max-sm:dark:bg-secondary-dark relative mr-2 flex items-center max-lg:justify-center max-sm:absolute max-sm:-top-18 max-sm:right-2 max-sm:rounded-xl max-sm:border-3">
+        <div className="border-accent dark:border-accent-dark max-xs:hidden relative mr-2 flex items-center max-lg:justify-center max-sm:absolute max-sm:right-2 rounded-xl border-3">
           <div
             className="peer relative flex cursor-pointer items-center"
             onClick={ThemeToggle}
@@ -102,7 +102,7 @@ const nav = ({ pathname, ThemeDark, ThemeToggle }) => {
             ></span>
             <FontAwesomeIcon
               icon={faMoon}
-              className={`${ThemeDark ? "text-accent-dark" : "text-heading"} px-[9px] py-3 text-2xl transition-all duration-300`}
+              className={`${ThemeDark ? "text-accent-dark" : "text-heading"} px-[7px] py-2.5 text-2xl transition-all duration-300`}
             />
           </div>
           <span
