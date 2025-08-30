@@ -4,8 +4,8 @@
 
 @theme {
   /*Light Theme*/
-  --color-main: 	#FAFAFA;
-  --color-secondary: #E5E7EB;
+  --color-main: #fafafa;
+  --color-secondary: #e5e7eb;
   --color-accent: #695bfd;
   --color-accent-hovered: #322a8d;
   --color-heading: #070606;
@@ -18,6 +18,17 @@
   --color-accent-hovered-dark: #217286;
   --color-heading-dark: #fdfffe;
   --color-subtext-dark: #928d8d;
+
+  --animate-carrot: carrot 2s ease-in-out infinite alternate;
+
+  @keyframes carrot {
+    0%, 10% {
+      left: 50px;
+    }
+    90%, 100% {
+      left: calc(100% - 100px);
+    }
+  }
 }
 
 @layer utilities {
