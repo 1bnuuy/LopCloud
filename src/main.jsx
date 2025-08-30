@@ -11,6 +11,9 @@ import Dictionary from "./pages/Dictionary.jsx";
 import Contact from "./pages/Contact.jsx";
 import ErrorPage from "./pages/ErrorPage.jsx";
 
+import ToastProvider from "./ui/Toast.jsx";
+import ThemeProvider from "./ui/Theme.jsx";
+
 const router = createBrowserRouter([
   {
     path: "/",
@@ -27,6 +30,10 @@ const router = createBrowserRouter([
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <RouterProvider router={router} />
+    <ThemeProvider>
+      <ToastProvider>
+        <RouterProvider router={router} />
+      </ToastProvider>
+    </ThemeProvider>
   </StrictMode>,
 );
