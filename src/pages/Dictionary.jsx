@@ -20,6 +20,7 @@ import {
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useToast } from "../ui/Toast";
+import { AnimatePresence, motion } from "motion/react";
 
 const initialState = {
   words: [],
@@ -94,42 +95,48 @@ const reducer = (state, action) => {
 const Dictionary = () => {
   const toast = useToast();
 
-  const toastSuccess = (text) => {
+  const toastSuccess = (text, act) => {
     toast.open((id) => (
-      <div
-        onClick={() => toast.close(id)}
-        className="flex cursor-pointer items-center gap-3 rounded-lg border-3 border-[#3a9c48] bg-[#eef8f3] p-2"
-      >
-        <FontAwesomeIcon
-          icon={faCheck}
-          className="rounded-full bg-[#3a9c48] px-[calc(0.375rem_-_0.5px)] size-[36px] py-2 text-xl text-[#eef8f3]"
-        />
-        <div className="flex flex-col">
-          <span className="text-lg font-bold">Hooray!</span>
-          <span className="text-subtext dark:text-subtext-dark text-sm">
-            {text}
-          </span>
+      <div className="bg-secondary dark:bg-secondary-dark flex w-[90vw] max-w-[555px] justify-between gap-3 rounded-lg px-3 py-2">
+        <div className="flex items-center gap-3 self-stretch">
+          <span className="w-1.5 self-stretch rounded-full bg-[#69d449]" />
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-[#69d449]">Hooray!</span>
+            <span className="text-subtext dark:text-subtext-dark text-sm">
+              {text}
+            </span>
+          </div>
         </div>
+
+        <button
+          className="text-accent dark:text-accent-dark hover:text-accent-hovered dark:hover:text-accent-hovered-dark cursor-pointer self-center px-2 font-bold"
+          onClick={() => toast.close(id)}
+        >
+          {act}
+        </button>
       </div>
     ));
   };
 
-  const toastFail = (text) => {
+  const toastFail = (text, act) => {
     toast.open((id) => (
-      <div
-        onClick={() => toast.close(id)}
-        className="flex cursor-pointer items-center gap-3 rounded-lg border-3 border-[#fe5660] bg-[#fcede9] p-2"
-      >
-        <FontAwesomeIcon
-          icon={faXmark}
-          className="rounded-full bg-[#fe5660] px-[calc(0.375rem_-_0.5px)] py-2 text-xl text-[#fcede9]"
-        />
-        <div className="flex flex-col">
-          <span className="text-lg font-bold">Uh-oh…</span>
-          <span className="text-subtext dark:text-subtext-dark text-sm">
-            {text}
-          </span>
+      <div className="bg-secondary dark:bg-secondary-dark flex w-[90vw] max-w-[555px] justify-between gap-3 rounded-lg px-3 py-2">
+        <div className="flex items-center gap-3 self-stretch">
+          <span className="w-1.5 self-stretch rounded-full bg-[#fe5660]" />
+          <div className="flex flex-col">
+            <span className="text-lg font-bold text-[#fe5660]">Uh-oh!</span>
+            <span className="text-subtext dark:text-subtext-dark text-sm">
+              {text}
+            </span>
+          </div>
         </div>
+
+        <button
+          className="text-accent dark:text-accent-dark hover:text-accent-hovered dark:hover:text-accent-hovered-dark cursor-pointer self-center px-2 font-bold"
+          onClick={() => toast.close(id)}
+        >
+          {act}
+        </button>
       </div>
     ));
   };
@@ -186,9 +193,13 @@ const Dictionary = () => {
 
         toastSuccess(
           "Poo returned with a basket full of fresh words (and carrots)!",
+          "Thanks",
         );
       } catch (error) {
-        toastFail("Oops, Poo stepped on the cable… connection lost!");
+        toastFail(
+          "Oops, Poo stepped on the cable… connection lost!",
+          "Dismiss",
+        );
       }
     }
 
@@ -226,7 +237,10 @@ const Dictionary = () => {
 
       if (!querySnapshot.empty) {
         dispatch({ type: "DUPLICATED", payload: true });
-        toastFail("This word already exists! Pee and Poo won't let it in!");
+        toastFail(
+          "This word already exists! Pee and Poo won't let it in!",
+          "Okay",
+        );
         return;
       }
 
@@ -236,7 +250,7 @@ const Dictionary = () => {
           type: "SUBMIT_WORD",
           payload: { id: docRef.id, ...newWord },
         });
-        toastSuccess("New word created, Pee hugs it tight!");
+        toastSuccess("New word created, Pee hugs it tight!", "Hop");
 
         // Reset form
         dispatch({ type: "RESET_FORM" });
@@ -247,7 +261,7 @@ const Dictionary = () => {
           el.checked = false;
         });
       } catch (err) {
-        toastFail("The word ran away before Pee could catch it...");
+        toastFail("The word ran away before Pee could catch it...", "Oops");
       }
     }
   };
@@ -262,10 +276,12 @@ const Dictionary = () => {
       await updateDoc(wordRef, {
         favorite: !word.favorite,
       });
-      toastSuccess("Favorited! Poo stuck a bow");
 
+      if (!word.favorite) {
+        toastSuccess("Favorited! Poo stuck a bow", "Done");
+      }
     } catch (err) {
-      toastFail("Star sticker fell off...");
+      toastFail("Star sticker fell off...", "Burrow");
       setTimeout(() => {
         dispatch({ type: "FAVORITE", payload: word.id }); //rollback
       }, 500);
@@ -278,10 +294,12 @@ const Dictionary = () => {
 
     try {
       await deleteDoc(doc(db, "words", word.id));
-      toastSuccess(`Poo made ${word.name.toUpperCase()} vanish!`);
-
+      toastSuccess(`Poo made ${word.name.toUpperCase()} vanish!`, "Bye");
     } catch (err) {
-      toastFail("The word refused to leave, Pee is chasing it around!");
+      toastFail(
+        "The word refused to leave, Pee is chasing it around!",
+        "Retry",
+      );
       setTimeout(() => {
         dispatch({ type: "ROLLBACK", payload: word, index });
       }, 500);
@@ -298,118 +316,132 @@ const Dictionary = () => {
   return (
     <>
       <div
-        className={`${state.open ? "z-50 -translate-y-1/2 opacity-100" : "-z-10 -translate-y-3/4 opacity-0"} bg-secondary dark:bg-secondary-dark fixed top-1/2 left-1/2 flex w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 flex-col justify-center gap-8 rounded-md p-5 transition-all duration-500`}
+        className={`${state.open ? "z-50" : "-z-10"} -translate-y-1/2 fixed top-1/2 left-1/2 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 transition-all duration-500`}
       >
-        <FontAwesomeIcon
-          icon={faXmark}
-          className="text-main bg-accent dark:bg-accent-dark dark:text-main-dark hover:text-accent-hovered dark:hover:text-accent-hovered-dark ml-auto cursor-pointer rounded-md px-1 py-1.75 text-2xl transition-all duration-300"
-          onClick={() => dispatch({ type: "OPEN_FORM" })}
-        />
-
-        <div className="relative flex flex-wrap gap-3">
-          {Object.entries(tagColors).map(([tag, color]) => (
-            <div
-              key={tag}
-              className={`text-heading relative w-12 text-center font-semibold select-none`}
-            >
-              <input
-                type="checkbox"
-                onChange={(e) =>
-                  dispatch({ type: "SELECT_TAGS", payload: e.target.value })
-                }
-                value={tag}
-                className="peer absolute top-1/2 left-0 z-50 size-full -translate-y-1/2 cursor-pointer appearance-none"
-              />
-              <span
-                className={`transition duration-300 peer-checked:opacity-30 ${color} inline-block size-full rounded-sm px-2 py-0.5`}
-              >
-                {tag}
-              </span>
-              <FontAwesomeIcon
-                icon={faCheck}
-                className="text-accent dark:text-accent-dark absolute left-1/2 z-10 -translate-x-1/2 text-2xl opacity-0 transition duration-300 peer-checked:opacity-100"
-              />
-            </div>
-          ))}
-        </div>
-
-        <div className="relative">
-          <input
-            required
-            ref={Name}
-            onChange={() => {
-              dispatch({ type: "DUPLICATED", payload: false });
-            }}
-            placeholder="Funny"
-            type="text"
-            className={`placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full rounded-md border-2 px-4 pt-4 pb-3 text-xl outline-none ${state.dup ? "border-red-500" : "border-accent dark:border-accent-dark"}`}
-          />
-
-          <span
-            className={`${state.dup ? "block" : "hidden"} px-3 py-1 text-lg text-red-500`}
+        <AnimatePresence mode="wait">
+          {state.open &&
+          <motion.div
+          key="form"
+            initial={{ scale: 0, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0, opacity: 0 }}
+            className="flex flex-col justify-center rounded-md p-5 bg-secondary dark:bg-secondary-dark gap-8"
           >
-            ⚠︎ This word already exists!
-          </span>
+            <FontAwesomeIcon
+              icon={faXmark}
+              className="text-main bg-accent dark:bg-accent-dark dark:text-main-dark hover:text-accent-hovered dark:hover:text-accent-hovered-dark ml-auto cursor-pointer rounded-md px-1 py-1.75 text-2xl transition-all duration-300"
+              onClick={() => dispatch({ type: "OPEN_FORM" })}
+            />
 
-          <span className="bg-secondary dark:bg-secondary-dark text-heading dark:text-heading-dark absolute -top-3 left-5 px-2.5 transition duration-500 select-none">
-            Word
-          </span>
-        </div>
+            <div className="relative flex flex-wrap gap-3">
+              {Object.entries(tagColors).map(([tag, color]) => (
+                <div
+                  key={tag}
+                  className={`text-heading relative w-12 text-center font-semibold select-none`}
+                >
+                  <input
+                    type="checkbox"
+                    onChange={(e) =>
+                      dispatch({ type: "SELECT_TAGS", payload: e.target.value })
+                    }
+                    value={tag}
+                    className="peer absolute top-1/2 left-0 z-50 size-full -translate-y-1/2 cursor-pointer appearance-none"
+                  />
+                  <span
+                    className={`transition duration-300 peer-checked:opacity-30 ${color} inline-block size-full rounded-sm px-2 py-0.5`}
+                  >
+                    {tag}
+                  </span>
+                  <FontAwesomeIcon
+                    icon={faCheck}
+                    className="text-accent dark:text-accent-dark absolute left-1/2 z-10 -translate-x-1/2 text-2xl opacity-0 transition duration-300 peer-checked:opacity-100"
+                  />
+                </div>
+              ))}
+            </div>
 
-        <div className="relative flex flex-wrap gap-2">
-          {wordType.map((type, index) => (
-            <div
-              key={index}
-              className={`relative flex items-center font-semibold text-nowrap select-none`}
-            >
+            <div className="relative">
               <input
-                type="checkbox"
-                onChange={(e) =>
-                  dispatch({ type: "SELECT_TYPES", payload: e.target.value })
-                }
-                value={type}
-                className="peer absolute top-1/2 left-0 size-full -translate-y-1/2 cursor-pointer appearance-none"
+                required
+                ref={Name}
+                onChange={() => {
+                  dispatch({ type: "DUPLICATED", payload: false });
+                }}
+                placeholder="Funny"
+                type="text"
+                className={`placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full rounded-md border-2 px-4 pt-4 pb-3 text-xl outline-none ${state.dup ? "border-red-500" : "border-accent dark:border-accent-dark"}`}
               />
-              <span className="peer-checked:bg-accent peer-checked:text-main dark:peer-checked:text-main-dark dark:peer-checked:bg-accent-dark bg-subtext dark:bg-subtext-dark rounded-sm px-2 py-0.5 transition duration-300">
-                {type}
+
+              <span
+                className={`${state.dup ? "block" : "hidden"} px-3 py-1 text-lg text-red-500`}
+              >
+                ⚠︎ This word already exists!
+              </span>
+
+              <span className="bg-secondary dark:bg-secondary-dark text-heading dark:text-heading-dark absolute -top-3 left-5 px-2.5 transition duration-500 select-none">
+                Word
               </span>
             </div>
-          ))}
-        </div>
 
-        <div className="relative">
-          <input
-            required
-            ref={Link}
-            placeholder="dictionary/english/..."
-            type="text"
-            className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark border-accent dark:border-accent-dark w-full rounded-md border-2 px-4 pt-4 pb-3 text-xl outline-none"
-          />
+            <div className="relative flex flex-wrap gap-2">
+              {wordType.map((type, index) => (
+                <div
+                  key={index}
+                  className={`relative flex items-center font-semibold text-nowrap select-none`}
+                >
+                  <input
+                    type="checkbox"
+                    onChange={(e) =>
+                      dispatch({
+                        type: "SELECT_TYPES",
+                        payload: e.target.value,
+                      })
+                    }
+                    value={type}
+                    className="peer absolute top-1/2 left-0 size-full -translate-y-1/2 cursor-pointer appearance-none"
+                  />
+                  <span className="peer-checked:bg-accent peer-checked:text-main dark:peer-checked:text-main-dark dark:peer-checked:bg-accent-dark bg-subtext dark:bg-subtext-dark rounded-sm px-2 py-0.5 transition duration-300">
+                    {type}
+                  </span>
+                </div>
+              ))}
+            </div>
 
-          <span className="bg-secondary dark:bg-secondary-dark text-heading dark:text-heading-dark absolute -top-3 left-5 px-2.5 transition duration-500 select-none">
-            Link
-          </span>
-        </div>
+            <div className="relative">
+              <input
+                required
+                ref={Link}
+                placeholder="dictionary/english/..."
+                type="text"
+                className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark border-accent dark:border-accent-dark w-full rounded-md border-2 px-4 pt-4 pb-3 text-xl outline-none"
+              />
 
-        <button
-          className="text-main hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark dark:text-main-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold transition duration-500"
-          type="button"
-          onClick={Create}
-        >
-          Create
-        </button>
+              <span className="bg-secondary dark:bg-secondary-dark text-heading dark:text-heading-dark absolute -top-3 left-5 px-2.5 transition duration-500 select-none">
+                Link
+              </span>
+            </div>
+
+            <button
+              className="text-main hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark dark:text-main-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold transition duration-500"
+              type="button"
+              onClick={Create}
+            >
+              Create
+            </button>
+          </motion.div>}
+        </AnimatePresence>
       </div>
 
       <section
-        className={`${state.open && "opacity-30"} dark:bg-main-dark bg-main grid h-screen w-screen overflow-hidden md:pt-15 pt-8 transition-all duration-300 max-lg:pb-25 lg:pl-25`}
+        className={`${state.open && "opacity-30"} dark:bg-main-dark bg-main grid h-screen w-screen overflow-hidden pt-8 transition-all duration-300 max-lg:pb-25 md:pt-15 lg:pl-25`}
       >
         <div className="relative flex h-full flex-col items-center gap-8 px-4">
           <div className="flex flex-col items-center gap-2">
             <div className="text-accent dark:text-accent-dark text-2xl font-semibold text-nowrap md:text-3xl lg:text-4xl">
               English Dictionary
             </div>
-            <span className="text-heading dark:text-heading-dark">
-              Total number of words: {state.words.length}
+            <span className="text-heading text-2xl dark:text-heading-dark">
+              Total - {state.words.length}
             </span>
           </div>
           <div className="flex gap-2">
@@ -431,107 +463,125 @@ const Dictionary = () => {
 
             <button
               onClick={() => dispatch({ type: "OPEN_FORM" })} //Wrap dispatch in a function to hinder infinite re-render loop
-              className="text-main dark:text-main-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md px-5 text-2xl"
+              className="text-main dark:text-main-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl transition"
             >
               Add
             </button>
           </div>
 
-          <div className="z-30 grid max-h-[50vh] md:max-h-[62vh] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:grid-cols-2 xl:grid-cols-3">
-            {filteredWords.length === 0 ? (
-              <div className="absolute left-1/2 flex w-70 -translate-x-1/2 justify-between text-4xl select-none">
-                <span className="rotate-y-180">🐇</span>
-                <span className="animate-carrot absolute">🥕</span>
-                <span>🐇</span>
-              </div>
-            ) : (
-              filteredWords
-                .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
-                .map((word, index) => {
-                  return (
-                    <div
-                      key={index}
-                      className="bg-secondary group dark:bg-secondary-dark border-accent dark:border-accent-dark relative flex h-60 w-71 max-xs:w-65 flex-col justify-between border-b-4 p-4"
-                    >
-                      <div className="flex gap-2">
-                        {(Array.isArray(word.tag) && word.tag.length > 0
-                          ? word.tag
-                          : ["N/A"]
-                        )
-                          .filter(Boolean) //removes null/undefined/empty strings
-                          .sort((a, b) => a.localeCompare(b))
-                          .map((t, i) => {
-                            return (
-                              <span
-                                className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold`}
-                                key={i}
-                              >
-                                {t || "N/A"}
-                              </span>
-                            );
-                          })}
-                      </div>
-                      <div className="flex flex-col justify-center gap-2">
-                        <p
-                          className={`text-heading dark:text-heading-dark line-clamp-2 py-1.5 font-[Poppins] text-2xl font-semibold text-balance ${word.name.length <= 12 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
-                        >
-                          {word.name.charAt(0).toUpperCase() +
-                            word.name.slice(1).toLowerCase()}
-                        </p>
-
-                        <div className="flex flex-wrap">
-                          {(Array.isArray(word.type)
-                            ? word.type
-                            : [word.type]
-                          ).map((t, i, arr) => {
-                            return (
-                              <span
-                                className={`text-subtext dark:text-subtext-dark px-1 text-sm font-semibold`}
-                                key={i}
-                              >
-                                {t}
-                                {i < arr.length - 1 && ","}
-                              </span>
-                            );
-                          })}
+          <div className="z-30 grid max-h-[55vh] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:max-h-[62vh] md:grid-cols-2 xl:grid-cols-3">
+            <AnimatePresence>
+              {filteredWords.length === 0 ? (
+                <div className="absolute left-1/2 flex w-70 -translate-x-1/2 justify-between text-4xl select-none">
+                  <span className="rotate-y-180">🐇</span>
+                  <span className="animate-carrot absolute">🥕</span>
+                  <span>🐇</span>
+                </div>
+              ) : (
+                filteredWords
+                  .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
+                  .map((word, index) => {
+                    return (
+                      <motion.div
+                        variants={{
+                          hidden: { scale: 0 },
+                          loaded: (i) => ({
+                            //i value is from custom(index)
+                            scale: 1,
+                            transition: {
+                              delay: i * 0.15,
+                              type: "spring",
+                              stiffness: 120,
+                            },
+                          }),
+                        }}
+                        custom={index}
+                        initial="hidden"
+                        animate="loaded"
+                        exit="hidden"
+                        key={index}
+                        className="bg-secondary group dark:bg-secondary-dark border-accent dark:border-accent-dark max-xs:w-65 relative flex h-60 w-71 flex-col justify-between border-b-4 p-4"
+                      >
+                        <div className="flex gap-2">
+                          {(Array.isArray(word.tag) && word.tag.length > 0
+                            ? word.tag
+                            : ["N/A"]
+                          )
+                            .filter(Boolean) //removes null/undefined/empty strings
+                            .sort((a, b) => a.localeCompare(b))
+                            .map((t, i) => {
+                              return (
+                                <span
+                                  className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold`}
+                                  key={i}
+                                >
+                                  {t || "N/A"}
+                                </span>
+                              );
+                            })}
                         </div>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <span className="text-subtext dark:text-subtext-dark">
-                          {word.date}
-                        </span>
-                        <a
-                          target="_blank"
-                          href={`https://dictionary.cambridge.org/dictionary/english/${word.link}`}
-                          className="ml-auto flex items-center"
-                        >
-                          <FontAwesomeIcon
-                            icon={faLink}
-                            className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-blue-500"
-                          />
-                        </a>
+                        <div className="flex flex-col justify-center gap-2">
+                          <p
+                            className={`text-heading dark:text-heading-dark line-clamp-2 py-1.5 font-[Poppins] text-2xl font-semibold text-balance ${word.name.length <= 12 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
+                          >
+                            {word.name.charAt(0).toUpperCase() +
+                              word.name.slice(1).toLowerCase()}
+                          </p>
 
-                        <button
-                          type="button"
-                          onClick={() => Delete(word, index)}
-                        >
-                          <FontAwesomeIcon
-                            icon={faTrash}
-                            className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-red-500"
-                          />
-                        </button>
+                          <div className="flex flex-wrap">
+                            {(Array.isArray(word.type)
+                              ? word.type
+                              : [word.type]
+                            ).map((t, i, arr) => {
+                              return (
+                                <span
+                                  className={`text-subtext dark:text-subtext-dark px-1 text-sm font-semibold`}
+                                  key={i}
+                                >
+                                  {t}
+                                  {i < arr.length - 1 && ","}
+                                </span>
+                              );
+                            })}
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-subtext dark:text-subtext-dark">
+                            {word.date}
+                          </span>
+                          <a
+                            target="_blank"
+                            href={`https://dictionary.cambridge.org/dictionary/english/${word.link}`}
+                            className="ml-auto flex items-center"
+                          >
+                            <FontAwesomeIcon
+                              icon={faLink}
+                              className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-blue-500"
+                            />
+                          </a>
 
-                        <button type="button" onClick={() => Favor(word)}>
-                          <FontAwesomeIcon
-                            icon={faStar}
-                            className={`cursor-pointer text-xl transition-all ${word.favorite ? "text-yellow-300" : "text-heading dark:text-heading-dark hover:text-yellow-300"}`}
-                          />
-                        </button>
-                      </div>
-                    </div>
-                  );
-                })
-            )}
+                          <button
+                            type="button"
+                            onClick={() => Delete(word, index)}
+                          >
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-red-500"
+                            />
+                          </button>
+
+                          <button type="button" onClick={() => Favor(word)}>
+                            <FontAwesomeIcon
+                              icon={faStar}
+                              className={`cursor-pointer text-xl transition-all ${word.favorite ? "text-yellow-300" : "text-heading dark:text-heading-dark hover:text-yellow-300"}`}
+                            />
+                          </button>
+                        </div>
+                      </motion.div>
+                    );
+                  })
+              )}
+            </AnimatePresence>
           </div>
         </div>
       </section>

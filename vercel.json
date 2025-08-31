@@ -4,5 +4,11 @@
       "source": "/(.*)",
       "destination": "/"
     }
-  ]
+  ],
+
+  "functions": {
+    "api/**/*.js": {
+      "regions": ["sin1"]
+    }
+  }
 }

@@ -1,5 +1,6 @@
 import { useState, createContext, useContext } from "react";
 import { useTheme } from "./Theme";
+import { AnimatePresence, motion } from "motion/react";
 
 const ToastContext = createContext();
 export const useToast = () => useContext(ToastContext);
@@ -24,9 +25,19 @@ export default function ToastProvider({ children }) {
       <div
         className={`${ThemeDark && "dark"} absolute top-8 left-1/2 z-50 -translate-x-1/2 space-y-2 lg:pl-25`}
       >
-        {toasts.map(({ id, component }) => (
-          <div key={id}>{component}</div>
-        ))}
+        <AnimatePresence>
+          {toasts.map(({ id, component }) => (
+            <motion.div
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 20 }}
+              transition={{ duration: 0.2 }}
+              key={id}
+            >
+              {component}
+            </motion.div>
+          ))}
+        </AnimatePresence>
       </div>
     </ToastContext.Provider>
   );
