@@ -4,7 +4,7 @@
 
 @theme {
   --breakpoint-xs: 30rem;
-  
+
   /*Light Theme*/
   --color-main: #fafafa;
   --color-secondary: #e5e7eb;
@@ -24,10 +24,12 @@
   --animate-carrot: carrot 2s ease-in-out infinite alternate;
 
   @keyframes carrot {
-    0%, 10% {
+    0%,
+    10% {
       left: 50px;
     }
-    90%, 100% {
+    90%,
+    100% {
       left: calc(100% - 100px);
     }
   }

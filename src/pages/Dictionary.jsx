@@ -102,7 +102,7 @@ const Dictionary = () => {
       >
         <FontAwesomeIcon
           icon={faCheck}
-          className="rounded-full bg-[#3a9c48] px-[calc(0.375rem_-_0.5px)] py-2 text-xl text-[#eef8f3]"
+          className="rounded-full bg-[#3a9c48] px-[calc(0.375rem_-_0.5px)] size-[36px] py-2 text-xl text-[#eef8f3]"
         />
         <div className="flex flex-col">
           <span className="text-lg font-bold">Hooray!</span>
@@ -226,7 +226,7 @@ const Dictionary = () => {
 
       if (!querySnapshot.empty) {
         dispatch({ type: "DUPLICATED", payload: true });
-        toastFail("🐰 This word already exists! Pee and Poo won't let it in!");
+        toastFail("This word already exists! Pee and Poo won't let it in!");
         return;
       }
 
@@ -263,6 +263,7 @@ const Dictionary = () => {
         favorite: !word.favorite,
       });
       toastSuccess("Favorited! Poo stuck a bow");
+
     } catch (err) {
       toastFail("Star sticker fell off...");
       setTimeout(() => {
@@ -277,7 +278,8 @@ const Dictionary = () => {
 
     try {
       await deleteDoc(doc(db, "words", word.id));
-      toastSuccess("✨ Poo made it vanish! ✨");
+      toastSuccess(`Poo made ${word.name.toUpperCase()} vanish!`);
+
     } catch (err) {
       toastFail("The word refused to leave, Pee is chasing it around!");
       setTimeout(() => {
@@ -296,7 +298,7 @@ const Dictionary = () => {
   return (
     <>
       <div
-        className={`${state.open ? "z-50 -translate-y-1/2 opacity-100" : "-z-10 -translate-y-3/4 opacity-0"} bg-secondary dark:bg-secondary-dark fixed top-1/2 left-1/2 flex w-3/4 max-w-[650px] min-w-[200px] -translate-x-1/2 flex-col justify-center gap-8 rounded-md p-5 transition-all duration-500`}
+        className={`${state.open ? "z-50 -translate-y-1/2 opacity-100" : "-z-10 -translate-y-3/4 opacity-0"} bg-secondary dark:bg-secondary-dark fixed top-1/2 left-1/2 flex w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 flex-col justify-center gap-8 rounded-md p-5 transition-all duration-500`}
       >
         <FontAwesomeIcon
           icon={faXmark}
@@ -399,7 +401,7 @@ const Dictionary = () => {
       </div>
 
       <section
-        className={`${state.open && "opacity-30"} dark:bg-main-dark bg-main grid h-screen w-screen overflow-hidden pt-15 transition-all duration-300 max-lg:pb-25 lg:pl-25`}
+        className={`${state.open && "opacity-30"} dark:bg-main-dark bg-main grid h-screen w-screen overflow-hidden md:pt-15 pt-8 transition-all duration-300 max-lg:pb-25 lg:pl-25`}
       >
         <div className="relative flex h-full flex-col items-center gap-8 px-4">
           <div className="flex flex-col items-center gap-2">
@@ -435,7 +437,7 @@ const Dictionary = () => {
             </button>
           </div>
 
-          <div className="z-30 grid h-[70%] max-h-[650px] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="z-30 grid max-h-[50vh] md:max-h-[62vh] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:grid-cols-2 xl:grid-cols-3">
             {filteredWords.length === 0 ? (
               <div className="absolute left-1/2 flex w-70 -translate-x-1/2 justify-between text-4xl select-none">
                 <span className="rotate-y-180">🐇</span>
@@ -449,7 +451,7 @@ const Dictionary = () => {
                   return (
                     <div
                       key={index}
-                      className="bg-secondary group dark:bg-secondary-dark border-accent dark:border-accent-dark relative flex h-60 w-71 flex-col justify-between border-b-4 p-4"
+                      className="bg-secondary group dark:bg-secondary-dark border-accent dark:border-accent-dark relative flex h-60 w-71 max-xs:w-65 flex-col justify-between border-b-4 p-4"
                     >
                       <div className="flex gap-2">
                         {(Array.isArray(word.tag) && word.tag.length > 0
