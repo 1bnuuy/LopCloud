@@ -12,7 +12,7 @@ function App() {
           ThemeToggle={ThemeToggle}
         />
         <main
-          className={`${ThemeDark && "dark"} bg-main dark:bg-main-dark overflow-hidden`}
+          className={`${ThemeDark && "dark"} bg-primary dark:bg-primary-dark overflow-hidden`}
         >
           <Outlet />
         </main>

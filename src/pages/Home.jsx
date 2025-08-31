@@ -1,7 +1,7 @@
 const Home = () => {
   return (
     <section
-      className={`dark:bg-main-dark bg-main h-screen transition-all duration-300 lg:pl-20`}
+      className={`dark:bg-primary-dark bg-primary h-screen transition-all duration-300 lg:pl-20`}
     >
       <div className="relative flex h-full flex-col items-center px-8 py-20 md:py-35 lg:flex-row-reverse lg:justify-around">
         <svg
@@ -17,7 +17,7 @@ const Home = () => {
               transform="translate(1115.643 419.962)"
             />
             <path
-              className="fill-main dark:fill-main-dark"
+              className="fill-primary dark:fill-primary-dark"
               d="M1165.421 496.297a5.731 5.731 0 0 1-3.448-1.145l-.062-.046-12.985-9.942a5.77 5.77 0 1 1 7.018-9.159l8.411 6.449 19.876-25.922a5.769 5.769 0 0 1 8.088-1.068l-.124.168.127-.165a5.775 5.775 0 0 1 1.068 8.088l-23.379 30.49a5.772 5.772 0 0 1-4.59 2.251Z"
             />
             <path
@@ -68,7 +68,7 @@ const Home = () => {
                 transform="translate(185.342 150.205)"
               />
               <path
-                className="fill-main dark:fill-main-dark"
+                className="fill-primary dark:fill-primary-dark"
                 d="M196.128 166.745a1.241 1.241 0 0 1-.747-.248l-.013-.01-2.814-2.154a1.25 1.25 0 1 1 1.521-1.985l1.822 1.4 4.307-5.617a1.25 1.25 0 0 1 1.753-.231l-.027.036.028-.036a1.251 1.251 0 0 1 .231 1.753l-5.066 6.607a1.25 1.25 0 0 1-.995.488Z"
               />
               <circle
@@ -79,7 +79,7 @@ const Home = () => {
                 transform="translate(185.342 185.203)"
               />
               <path
-                className="fill-main dark:fill-main-dark"
+                className="fill-primary dark:fill-primary-dark"
                 d="M196.128 201.743a1.242 1.242 0 0 1-.747-.248l-.013-.01-2.814-2.154a1.25 1.25 0 1 1 1.521-1.985l1.822 1.4 4.307-5.617a1.25 1.25 0 0 1 1.753-.231l-.027.036.028-.036a1.252 1.252 0 0 1 .231 1.753l-5.066 6.607a1.25 1.25 0 0 1-.995.488Z"
               />
               <circle
@@ -90,7 +90,7 @@ const Home = () => {
                 transform="translate(191.789 225.726)"
               />
               <path
-                className="fill-main dark:fill-main-dark"
+                className="fill-primary dark:fill-primary-dark"
                 d="M202.575 242.266a1.241 1.241 0 0 1-.747-.248l-.013-.01-2.814-2.154a1.25 1.25 0 1 1 1.521-1.985l1.822 1.4 4.307-5.617a1.25 1.25 0 0 1 1.753-.231l-.027.036.027-.036a1.252 1.252 0 0 1 .231 1.753l-5.066 6.607a1.251 1.251 0 0 1-.995.488Z"
               />
               <path
@@ -106,7 +106,7 @@ const Home = () => {
                 d="M255.585 294.689c-22.868-96.031-3.795-180.881 5.471-212.895a12.888 12.888 0 0 0-12.387-16.449H26.678a12.922 12.922 0 0 0-10.426 5.3c-8.961 12.323-27.556 53.187-6.787 166.256 11.107 60.49 10.941 101.732 7.313 128.9-2.036 15.3-5.176 26.128-8.022 33.432l-.3.774a12.562 12.562 0 0 0-.921 4.651 12.741 12.741 0 0 0 4.172 9.578 12.2 12.2 0 0 0 2.92 2.026 12.347 12.347 0 0 0 2.791 1.022 12.6 12.6 0 0 0 3.012.359h218.559c.028 0 .1.009.23.009 1.4 0 8.7-.405 15.325-8.381 10.039-12.086 18.374-41.778 1.041-114.582Zm-2.662 113.106c-6.493 7.884-13.538 7.681-13.879 7.672H20.421a10.717 10.717 0 0 1-8.869-4.706 10.469 10.469 0 0 1-1.483-8.685 9.024 9.024 0 0 1 .405-1.253 134.816 134.816 0 0 0 7.193-25.843c5.195-28.32 6.161-72.021-6.051-138.47-20.611-112.231-2.385-152.478 6.4-164.571a10.758 10.758 0 0 1 8.658-4.4h221.994a10.687 10.687 0 0 1 10.278 13.64c-9.311 32.188-28.477 117.481-5.489 214.018 17.094 71.789 9.146 100.855-.534 112.598Z"
               />
               <path
-                className="fill-main-dark dark:fill-main"
+                className="fill-primary-dark dark:fill-primary"
                 d="M150.123 169.915H35.75a8.767 8.767 0 1 1 0-17.533h114.373a8.767 8.767 0 0 1 0 17.533ZM150.123 207.675H35.75a8.767 8.767 0 0 1 0-17.533h114.373a8.767 8.767 0 1 1 0 17.533ZM159.333 246.356H44.96a8.767 8.767 0 1 1 0-17.533h114.373a8.767 8.767 0 1 1 0 17.533ZM165.78 286.879H51.407a8.767 8.767 0 1 1 0-17.533H165.78a8.767 8.767 0 1 1 0 17.533Z"
               />
               <path
@@ -117,18 +117,18 @@ const Home = () => {
                 cx="11.973"
                 cy="11.973"
                 r="11.973"
-                className="fill-main-dark dark:fill-main"
+                className="fill-primary-dark dark:fill-primary"
                 transform="translate(199.157 266.14)"
               />
               <path
-                className="fill-main-dark dark:fill-main"
+                className="fill-primary-dark dark:fill-primary"
                 d="M171.306 326.482H56.933a8.767 8.767 0 1 1 0-17.533h114.373a8.767 8.767 0 0 1 0 17.533Z"
               />
               <circle
                 cx="11.973"
                 cy="11.973"
                 r="11.973"
-                className="fill-main-dark dark:fill-main"
+                className="fill-primary-dark dark:fill-primary"
                 transform="translate(204.682 305.742)"
               />
             </g>
