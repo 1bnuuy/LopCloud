@@ -6,20 +6,28 @@
   --breakpoint-xs: 30rem;
 
   /*Light Theme*/
-  --color-main: #fafafa;
-  --color-secondary: #e5e7eb;
+  --color-primary: #fafafa;
+  --color-secondary: #eeeeee;
+  --color-tertiary: #d4d4d4;
   --color-accent: #695bfd;
-  --color-accent-hovered: #322a8d;
-  --color-heading: #070606;
+  --color-accent-hovered: #4236d9;
+  --color-heading: #191919;
   --color-subtext: #71747e;
 
   /*Dark Theme*/
-  --color-main-dark: #121212;
-  --color-secondary-dark: #222222;
-  --color-accent-dark: #15cefc;
-  --color-accent-hovered-dark: #217286;
-  --color-heading-dark: #fdfffe;
+  --color-primary-dark: #191919;
+  --color-secondary-dark: #252525;
+  --color-tertiary-dark: #3f3f3f;
+  --color-accent-dark: rgb(56, 189, 248);
+  --color-accent-hovered-dark: rgb(17, 151, 212);
+  --color-heading-dark: #fafafa;
   --color-subtext-dark: #928d8d;
+
+  /*General*/
+  --color-success: #16a34a;
+  --color-error: #e7000b;
+  --color-success-hovered: #3dc96e;
+  --color-error-hovered: #6d0005;
 
   --animate-carrot: carrot 2s ease-in-out infinite alternate;
 
