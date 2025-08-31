@@ -78,6 +78,7 @@ const nav = ({ ThemeDark, ThemeToggle }) => {
               return (
                 <motion.div
                   whileHover="hover"
+                  whileTap="hover"
                   initial="initial"
                   key={index}
                   className="relative flex items-center gap-6 max-lg:justify-center"
@@ -126,28 +127,44 @@ const nav = ({ ThemeDark, ThemeToggle }) => {
         <div
           className={`border-accent dark:border-accent-dark ${NextPage ? "max-xs:block" : "max-xs:hidden"} xs:max-sm:absolute xs:max-sm:right-4 relative flex items-center rounded-xl border-3 max-lg:justify-center`}
         >
-          <div
-            className="peer relative flex cursor-pointer items-center"
-            onClick={ThemeToggle}
-          >
-            <span
-              className={`absolute ${ThemeDark ? "scale-y-0" : "scale-y-100"} bg-accent top-2/3 left-5/6 h-full w-1 origin-top -translate-1/2 rotate-45 transition duration-300 select-none`}
-            ></span>
+          <AnimatePresence>
+            <motion.div
+              whileHover="hover"
+              whileTap="hover"
+              initial="initial"
+              key="themeButton"
+              className="relative flex cursor-pointer justify-center items-center"
+              onClick={ThemeToggle}
+            >
+              <span
+                className={`absolute ${ThemeDark ? "scale-y-0" : "scale-y-100"} bg-accent dark:bg-accent-dark top-2/3 left-5/6 h-full w-1 origin-top -translate-1/2 rotate-45 transition duration-300 select-none`}
+              ></span>
 
-            <FontAwesomeIcon
-              icon={faMoon}
-              className={`${ThemeDark ? "text-accent-dark" : "text-heading"} px-[7px] py-2.5 text-2xl transition duration-300`}
-            />
-          </div>
-          <span
-            className={`text-main dark:text-main-dark bg-accent dark:bg-accent-dark absolute rounded-md px-3 py-1 opacity-0 transition duration-300 peer-hover:opacity-100 peer-active:opacity-100 max-lg:-translate-y-30 max-lg:peer-hover:-translate-y-22 max-lg:peer-active:-translate-y-22 max-sm:hidden lg:translate-x-30 lg:peer-hover:translate-x-22`}
-          >
-            Theme
-          </span>
+              <FontAwesomeIcon
+                icon={faMoon}
+                className={`${ThemeDark ? "text-accent-dark" : "text-heading"} px-[7px] py-2.5 text-2xl transition duration-300`}
+              />
+
+              <motion.span
+                variants={{
+                  initial: { opacity: 0, x: 0, y: 0 },
+                  hover: {
+                    opacity: 1,
+                    x: isMobile ? 0 : -22,
+                    y: isMobile ? -22 : 0,
+                  },
+                }}
+                key="label"
+                className={`pointer-events-none absolute rounded-md px-3 py-1 max-lg:mb-30 lg:ml-30 ${ThemeDark ? "text-main-dark bg-accent-dark" : "text-main bg-accent"}`}
+              >
+                Theme
+              </motion.span>
+            </motion.div>
+          </AnimatePresence>
         </div>
 
         <button
-          className="max-xs:block bg-secondary dark:bg-secondary-dark text-accent dark:text-accent-dark absolute -top-9 hidden w-full cursor-pointer rounded-md text-lg transition duration-300"
+          className="max-xs:block text-accent dark:text-accent-dark absolute right-1 hidden -rotate-90 cursor-pointer rounded-md text-xl transition duration-300"
           onClick={() => setNextPage(!NextPage)}
         >
           <FontAwesomeIcon
