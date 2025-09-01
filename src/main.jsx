@@ -18,12 +18,12 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    errorElement: <ErrorPage />,
     children: [
       { path: "/", element: <Home /> },
       { path: "todolist", element: <TodoList /> },
       { path: "dictionary", element: <Dictionary /> },
       { path: "contact", element: <Contact /> },
+      { path: "*", element: <ErrorPage /> },
     ],
   },
 ]); // This is the key for <Outlet /> in App.jsx to work omfg

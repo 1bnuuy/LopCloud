@@ -18,8 +18,8 @@
   --color-primary-dark: #191919;
   --color-secondary-dark: #252525;
   --color-tertiary-dark: #3f3f3f;
-  --color-accent-dark: rgb(56, 189, 248);
-  --color-accent-hovered-dark: rgb(17, 151, 212);
+  --color-accent-dark: #1E90FF;
+  --color-accent-hovered-dark: #217399;
   --color-heading-dark: #fafafa;
   --color-subtext-dark: #928d8d;
 
@@ -51,7 +51,7 @@
   /*Light Theme*/
   ::-webkit-scrollbar-track {
     border-radius: 8px;
-    background: var(--color-secondary);
+    background: transparent;
   }
 
   ::-webkit-scrollbar-thumb {
@@ -64,11 +64,6 @@
   }
 
   /*Dark Theme*/
-  .dark ::-webkit-scrollbar-track {
-    border-radius: 8px;
-    background: var(--color-secondary-dark);
-  }
-
   .dark ::-webkit-scrollbar-thumb {
     background: var(--color-accent-dark);
     border-radius: 8px;
@@ -76,6 +71,16 @@
 
   .dark ::-webkit-scrollbar-thumb:hover {
     background: var(--color-accent-hovered-dark);
+  }
+
+  .grid-background {
+    background-image: radial-gradient(circle, #1919192f 2px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .dark .grid-background {
+    background-image: radial-gradient(circle, #fafafa2f 2px, transparent 1px);
+    background-size: 40px 40px;
   }
 }
 
