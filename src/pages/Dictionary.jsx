@@ -118,7 +118,7 @@ const Dictionary = () => {
         </div>
 
         <button
-          className="text-accent dark:text-accent-dark bg-tertiary dark:bg-tertiary-dark rounded-md hover:text-accent-hovered dark:hover:text-accent-hovered-dark cursor-pointer self-center px-2 py-1 font-bold text-nowrap"
+          className="text-accent dark:text-accent-dark bg-tertiary dark:bg-tertiary-dark hover:text-accent-hovered dark:hover:text-accent-hovered-dark cursor-pointer self-center rounded-md px-2 py-1 font-bold text-nowrap"
           onClick={() => toast.close(id)}
         >
           {act}
@@ -141,7 +141,7 @@ const Dictionary = () => {
         </div>
 
         <button
-          className="text-accent dark:text-accent-dark bg-tertiary dark:bg-tertiary-dark rounded-md hover:text-accent-hovered dark:hover:text-accent-hovered-dark cursor-pointer self-center px-2 py-1 font-bold text-nowrap"
+          className="text-accent dark:text-accent-dark bg-tertiary dark:bg-tertiary-dark hover:text-accent-hovered dark:hover:text-accent-hovered-dark cursor-pointer self-center rounded-md px-2 py-1 font-bold text-nowrap"
           onClick={() => toast.close(id)}
         >
           {act}
@@ -335,9 +335,7 @@ const Dictionary = () => {
 
   return (
     <>
-      <div
-        className="z-50 fixed top-1/2 left-1/2 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2 transition-all"
-      >
+      <div className="fixed top-1/2 left-1/2 z-50 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2 transition-all">
         <AnimatePresence mode="wait">
           {state.open && (
             <motion.div
@@ -458,9 +456,7 @@ const Dictionary = () => {
         </AnimatePresence>
       </div>
 
-      <div
-        className="z-50 fixed top-1/2 left-1/2 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2 transition-all"
-      >
+      <div className="fixed top-1/2 left-1/2 z-50 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2 transition-all">
         <AnimatePresence mode="wait">
           {state.confirm && (
             <motion.div
@@ -470,11 +466,11 @@ const Dictionary = () => {
               exit={{ scale: 0, opacity: 0 }}
               className="bg-secondary dark:bg-secondary-dark relative flex flex-col justify-center gap-5 rounded-b-lg p-5 text-center"
             >
-              <div className="bg-tertiary dark:bg-tertiary-dark flex justify-center absolute -top-40 left-0 -z-10 h-40 pt-3 w-full overflow-hidden rounded-t-lg">
+              <div className="bg-tertiary dark:bg-tertiary-dark absolute -top-40 left-0 -z-10 flex h-40 w-full justify-center overflow-hidden rounded-t-lg pt-3">
                 <svg
-                width="500"
-                height="155"
-                className="shrink-0"
+                  width="500"
+                  height="155"
+                  className="shrink-0"
                   viewBox="0 -10 1100 410"
                 >
                   <path
@@ -636,11 +632,11 @@ const Dictionary = () => {
                 Are you sure, bun?
               </span>
               <span className="text-subtext dark:text-subtext-dark">
-                Double-check! Once deleted, {" "}
-                <span className="text-accent dark:text-accent-dark font-bold text-xl">
+                Double-check! Once deleted,{" "}
+                <span className="text-accent dark:text-accent-dark text-xl font-bold">
                   {state.confirmTarget.word.name.toUpperCase()}
-                </span>
-                {" "}will hop away for good and cannot be recovered.
+                </span>{" "}
+                will hop away for good and cannot be recovered.
               </span>
               <div className="flex gap-5">
                 <button
@@ -669,163 +665,166 @@ const Dictionary = () => {
         </AnimatePresence>
       </div>
 
-      <section
-        className="dark:bg-primary-dark bg-primary grid h-dvh w-screen overflow-hidden pt-8 transition-all max-lg:pb-25 md:pt-15 lg:px-25"
-      >
-        <div className={`relative flex h-full flex-col items-center gap-8 px-4 ${(state.open || state.confirm) && "opacity-30"}`}>
-          <div className="flex flex-col items-center gap-2">
-            <div className="text-accent dark:text-accent-dark text-2xl font-semibold text-nowrap md:text-3xl lg:text-4xl">
-              English Dictionary
+      <section className="dark:bg-primary-dark grid-background bg-primary grid h-dvh w-screen overflow-hidden pt-8 transition-all max-lg:pb-25 md:pt-15 lg:px-25">
+        <AnimatePresence>
+          <div
+            className={`relative flex h-full flex-col items-center gap-8 px-4 ${(state.open || state.confirm) && "pointer-events-none opacity-30"}`}
+          >
+            <div className="flex flex-col items-center gap-2">
+                <span className="text-accent dark:text-accent-dark text-2xl font-semibold text-nowrap md:text-3xl lg:text-4xl">
+                  English Dictionary
+                </span>
+                <span className="text-heading dark:text-heading-dark text-2xl">
+                Total - {state.words.length}
+              </span>
+              
             </div>
-            <span className="text-heading dark:text-heading-dark text-2xl">
-              Total - {state.words.length}
-            </span>
-          </div>
-          <div className="flex gap-2">
-            <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center space-x-3 rounded-md border-2 px-4 py-2.5 text-2xl">
-              <input
-                placeholder="Search..."
-                value={state.search}
-                onChange={(e) =>
-                  dispatch({ type: "SEARCH", payload: e.target.value })
-                }
-                type="text"
-                className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full outline-none"
-              />
-              <FontAwesomeIcon
-                icon={faSearch}
-                className="text-accent dark:text-accent-dark"
-              />
+            <div className="flex gap-2 relative">
+              <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center space-x-3 rounded-md border-2 px-4 py-2.5 text-2xl">
+                <input
+                  placeholder="Search..."
+                  value={state.search}
+                  onChange={(e) =>
+                    dispatch({ type: "SEARCH", payload: e.target.value })
+                  }
+                  type="text"
+                  className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full outline-none"
+                />
+                <FontAwesomeIcon
+                  icon={faSearch}
+                  className="text-accent dark:text-accent-dark"
+                />
+              </div>
+
+              <button
+                onClick={() => dispatch({ type: "OPEN_FORM" })} //Wrap dispatch in a function to hinder infinite re-render loop
+                className="text-primary dark:text-primary-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl transition"
+              >
+                Add
+              </button>
             </div>
 
-            <button
-              onClick={() => dispatch({ type: "OPEN_FORM" })} //Wrap dispatch in a function to hinder infinite re-render loop
-              className="text-primary dark:text-primary-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl transition"
-            >
-              Add
-            </button>
-          </div>
-
-          <div className="z-30 grid max-h-[55vh] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:max-h-[62vh] md:grid-cols-2 xl:grid-cols-3">
-            <AnimatePresence>
-              {filteredWords.length === 0 ? (
-                <div className="absolute left-1/2 flex w-70 -translate-x-1/2 justify-between text-4xl select-none">
-                  <span className="rotate-y-180">🐇</span>
-                  <span className="animate-carrot absolute">🥕</span>
-                  <span>🐇</span>
-                </div>
-              ) : (
-                filteredWords
-                  .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
-                  .map((word, index) => {
-                    return (
-                      <motion.div
-                        variants={{
-                          hidden: { scale: 0 },
-                          loaded: (i) => ({
-                            //i value is from custom(index)
-                            scale: 1,
-                            transition: {
-                              delay: i * 0.15,
-                              type: "spring",
-                              stiffness: 120,
-                            },
-                          }),
-                        }}
-                        custom={index}
-                        initial="hidden"
-                        animate="loaded"
-                        exit="hidden"
-                        key={index}
-                        className="bg-secondary group dark:bg-secondary-dark border-accent dark:border-accent-dark max-xs:w-65 relative flex h-60 w-71 flex-col justify-between border-b-4 p-4"
-                      >
-                        <div className="flex gap-2">
-                          {(Array.isArray(word.tag) && word.tag.length > 0
-                            ? word.tag
-                            : ["N/A"]
-                          )
-                            .filter(Boolean) //removes null/undefined/empty strings
-                            .sort((a, b) => a.localeCompare(b))
-                            .map((t, i) => {
-                              return (
-                                <span
-                                  className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold`}
-                                  key={i}
-                                >
-                                  {t || "N/A"}
-                                </span>
-                              );
-                            })}
-                        </div>
-                        <div className="flex flex-col justify-center gap-2">
-                          <p
-                            className={`text-heading dark:text-heading-dark line-clamp-2 py-1 font-[Poppins] text-2xl font-semibold text-balance ${word.name.length <= 12 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
-                          >
-                            {word.name.charAt(0).toUpperCase() +
-                              word.name.slice(1).toLowerCase()}
-                          </p>
-
-                          <div className="flex flex-wrap">
-                            {(Array.isArray(word.type)
-                              ? word.type
-                              : [word.type]
-                            ).map((t, i, arr) => {
-                              return (
-                                <span
-                                  className={`text-subtext dark:text-subtext-dark px-1 text-sm font-semibold`}
-                                  key={i}
-                                >
-                                  {t}
-                                  {i < arr.length - 1 && ","}
-                                </span>
-                              );
-                            })}
+            <div className="z-30 mb-10 grid max-h-[calc(100vh_-_375px)] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:grid-cols-2 xl:grid-cols-3">
+              <AnimatePresence>
+                {filteredWords.length === 0 ? (
+                  <div className="absolute left-1/2 flex w-70 -translate-x-1/2 justify-between text-4xl select-none">
+                    <span className="rotate-y-180">🐇</span>
+                    <span className="animate-carrot absolute">🥕</span>
+                    <span>🐇</span>
+                  </div>
+                ) : (
+                  filteredWords
+                    .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
+                    .map((word, index) => {
+                      return (
+                        <motion.div
+                          variants={{
+                            hidden: { scale: 0 },
+                            loaded: (i) => ({
+                              //i value is from custom(index)
+                              scale: 1,
+                              transition: {
+                                delay: i * 0.08,
+                                type: "spring",
+                                stiffness: 150,
+                              },
+                            }),
+                          }}
+                          custom={index}
+                          initial="hidden"
+                          animate="loaded"
+                          exit="hidden"
+                          key={index}
+                          className={`bg-secondary group dark:bg-secondary-dark ${word.favorite ? "border-yellow-600 dark:border-amber-200" : "border-accent dark:border-accent-dark"} max-xs:w-65 relative flex h-60 w-71 flex-col justify-between border-b-4 p-4`}
+                        >
+                          <div className="flex gap-2">
+                            {(Array.isArray(word.tag) && word.tag.length > 0
+                              ? word.tag
+                              : ["N/A"]
+                            )
+                              .filter(Boolean) //removes null/undefined/empty strings
+                              .sort((a, b) => a.localeCompare(b))
+                              .map((t, i) => {
+                                return (
+                                  <span
+                                    className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold`}
+                                    key={i}
+                                  >
+                                    {t || "N/A"}
+                                  </span>
+                                );
+                              })}
                           </div>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <span className="text-subtext dark:text-subtext-dark">
-                            {word.date}
-                          </span>
-                          <a
-                            target="_blank"
-                            href={`https://dictionary.cambridge.org/dictionary/english/${word.link}`}
-                            className="ml-auto flex items-center"
-                          >
-                            <FontAwesomeIcon
-                              icon={faLink}
-                              className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-blue-500"
-                            />
-                          </a>
+                          <div className="flex flex-col justify-center gap-2">
+                            <p
+                              className={`text-heading dark:text-heading-dark line-clamp-2 py-1 font-[Poppins] text-2xl font-semibold text-balance ${word.name.length <= 12 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
+                            >
+                              {word.name.charAt(0).toUpperCase() +
+                                word.name.slice(1).toLowerCase()}
+                            </p>
 
-                          <button
-                            type="button"
-                            onClick={() =>
-                              dispatch({
-                                type: "CONFIRMATION",
-                                payload: { word, index },
-                              })
-                            }
-                          >
-                            <FontAwesomeIcon
-                              icon={faTrash}
-                              className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-red-500"
-                            />
-                          </button>
+                            <div className="flex flex-wrap">
+                              {(Array.isArray(word.type)
+                                ? word.type
+                                : [word.type]
+                              ).map((t, i, arr) => {
+                                return (
+                                  <span
+                                    className={`text-subtext dark:text-subtext-dark px-1 text-sm font-semibold`}
+                                    key={i}
+                                  >
+                                    {t}
+                                    {i < arr.length - 1 && ","}
+                                  </span>
+                                );
+                              })}
+                            </div>
+                          </div>
+                          <div className="flex items-center space-x-2">
+                            <span className="text-subtext dark:text-subtext-dark">
+                              {word.date}
+                            </span>
+                            <a
+                              target="_blank"
+                              href={`https://dictionary.cambridge.org/dictionary/english/${word.link}`}
+                              className="ml-auto flex items-center"
+                            >
+                              <FontAwesomeIcon
+                                icon={faLink}
+                                className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-blue-500"
+                              />
+                            </a>
 
-                          <button type="button" onClick={() => Favor(word)}>
-                            <FontAwesomeIcon
-                              icon={faStar}
-                              className={`cursor-pointer text-xl transition-all ${word.favorite ? "text-yellow-300" : "text-heading dark:text-heading-dark hover:text-yellow-300"}`}
-                            />
-                          </button>
-                        </div>
-                      </motion.div>
-                    );
-                  })
-              )}
-            </AnimatePresence>
+                            <button
+                              type="button"
+                              onClick={() =>
+                                dispatch({
+                                  type: "CONFIRMATION",
+                                  payload: { word, index },
+                                })
+                              }
+                            >
+                              <FontAwesomeIcon
+                                icon={faTrash}
+                                className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-red-500"
+                              />
+                            </button>
+
+                            <button type="button" onClick={() => Favor(word)}>
+                              <FontAwesomeIcon
+                                icon={faStar}
+                                className={`cursor-pointer text-xl transition-all ${word.favorite ? "text-yellow-600 dark:text-amber-200" : "text-heading dark:text-heading-dark hover:text-yellow-300"}`}
+                              />
+                            </button>
+                          </div>
+                        </motion.div>
+                      );
+                    })
+                )}
+              </AnimatePresence>
+            </div>
           </div>
-        </div>
+        </AnimatePresence>
       </section>
     </>
   );

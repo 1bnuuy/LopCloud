@@ -1,6 +1,5 @@
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getFirestore } from "firebase/firestore";
+import { initializeFirestore, persistentLocalCache, persistentMultipleTabManager } from "firebase/firestore";
 
 const firebaseConfig = {
   apiKey: "AIzaSyC0HPBs50SN9w8ks8MCS8lXziUHJvJR-9Q",
@@ -12,11 +11,10 @@ const firebaseConfig = {
   measurementId: "G-F756813310"
 };
 
-// 🐰 Initialize Firebase
 const app = initializeApp(firebaseConfig);
 
-// 🌸 Initialize Firestore
-const db = getFirestore(app);
-
-// 🐇 Export the Firestore instance
-export { db };
+export const db = initializeFirestore(app, {
+  localCache: persistentLocalCache({
+    tabManager: persistentMultipleTabManager()
+  })
+});

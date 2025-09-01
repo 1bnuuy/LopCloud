@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCloud,
@@ -38,8 +38,7 @@ const links = [
   },
 ];
 
-const nav = ({ ThemeDark, ThemeToggle }) => {
-  const pathname = useLocation().pathname;
+const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
   const [NextPage, setNextPage] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
@@ -173,4 +172,4 @@ const nav = ({ ThemeDark, ThemeToggle }) => {
   );
 };
 
-export default nav;
+export default Nav;

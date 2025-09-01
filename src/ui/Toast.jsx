@@ -23,14 +23,14 @@ export default function ToastProvider({ children }) {
     <ToastContext.Provider value={{ open, close }}>
       {children}
       <div
-        className={`${ThemeDark && "dark"} absolute top-8 left-1/2 z-50 -translate-x-1/2 space-y-2 lg:pl-25`}
+        className={`${ThemeDark && "dark"} absolute overflow-hidden w-screen flex-col flex items-end top-5 z-50 gap-2 max-sm:items-center px-5`}
       >
         <AnimatePresence>
           {toasts.map(({ id, component }) => (
             <motion.div
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, x: 100 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: -100 }}
               transition={{ duration: 0.2 }}
               key={id}
             >
