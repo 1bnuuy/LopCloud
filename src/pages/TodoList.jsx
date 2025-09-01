@@ -1,18 +1,18 @@
-import { motion } from "motion/react";
-
 const Todolist = () => {
   return (
-    <motion.div
-      key="home"
-      initial={{ opacity: 0, x: 50 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: -50 }}
-      transition={{ duration: 0.5 }}
-    >
-      <h1>Home Page 🐰</h1>
-      <p>Welcome to my cute app!</p>
-    </motion.div>
-  )
-}
+    <section className="dark:bg-primary-dark grid-background bg-primary h-dvh w-screen overflow-hidden pt-8 transition-all max-lg:pb-25 md:pt-15 lg:px-25">
+      <div className="relative flex h-full flex-col items-center gap-4 px-4">
+        <span className="text-accent dark:text-accent-dark text-2xl font-semibold text-nowrap md:text-3xl lg:text-4xl">
+          Tasks & Carrots
+        </span>
+        <span className="text-subtext dark:text-subtext-dark text-xl text-nowrap">
+          Let's see what we've got to do today.
+        </span>
 
-export default Todolist
+        <div></div>
+      </div>
+    </section>
+  );
+};
+
+export default Todolist;

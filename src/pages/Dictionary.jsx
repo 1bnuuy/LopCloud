@@ -212,7 +212,9 @@ const Dictionary = () => {
       }
     }
 
-    fetchWords();
+    setTimeout(() => {
+      fetchWords();
+    }, 1100);
 
     return () => {
       isLoaded = false;
@@ -347,7 +349,7 @@ const Dictionary = () => {
             >
               <FontAwesomeIcon
                 icon={faXmark}
-                className="text-primary bg-accent dark:bg-accent-dark dark:text-primary-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark ml-auto cursor-pointer rounded-md px-1 py-1.75 text-2xl transition-all"
+                className="text-primary bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark ml-auto cursor-pointer rounded-md px-1 py-1.75 text-2xl transition-all"
                 onClick={() => dispatch({ type: "OPEN_FORM" })}
               />
 
@@ -423,7 +425,7 @@ const Dictionary = () => {
                       value={type}
                       className="peer absolute top-1/2 left-0 size-full -translate-y-1/2 cursor-pointer appearance-none"
                     />
-                    <span className="peer-checked:bg-accent peer-checked:text-primary dark:peer-checked:text-primary-dark dark:peer-checked:bg-accent-dark bg-subtext dark:bg-subtext-dark rounded-sm px-2 py-0.5 transition">
+                    <span className="peer-checked:bg-accent peer-checked:text-primary dark:peer-checked:bg-accent-dark bg-subtext dark:bg-subtext-dark rounded-sm px-2 py-0.5 transition">
                       {type}
                     </span>
                   </div>
@@ -445,7 +447,7 @@ const Dictionary = () => {
               </div>
 
               <button
-                className="text-primary hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark dark:text-primary-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold transition"
+                className="text-primary hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold transition"
                 type="button"
                 onClick={Create}
               >
@@ -640,7 +642,7 @@ const Dictionary = () => {
               </span>
               <div className="flex gap-5">
                 <button
-                  className="text-heading hover:text-primary hover:bg-accent dark:hover:bg-accent-dark dark:text-heading-dark dark:bg-tertiary-dark dark:hover:text-primary-dark bg-tertiary w-full cursor-pointer rounded-md p-1 text-xl transition"
+                  className="text-heading hover:text-primary hover:bg-accent dark:hover:bg-accent-dark dark:text-heading-dark dark:bg-tertiary-dark bg-tertiary w-full cursor-pointer rounded-md p-1 text-xl transition"
                   type="button"
                   onClick={() => {
                     dispatch({ type: "CONFIRMATION" });
@@ -665,14 +667,15 @@ const Dictionary = () => {
         </AnimatePresence>
       </div>
 
-      <section className="dark:bg-primary-dark grid-background bg-primary grid h-dvh w-screen overflow-hidden pt-8 transition-all max-lg:pb-25 md:pt-15 lg:px-25">
+      <section
+       className="dark:bg-primary-dark grid-background bg-primary h-dvh w-screen overflow-hidden pt-8 transition-all max-lg:pb-25 md:pt-15 lg:px-25">
         <AnimatePresence>
           <div
             className={`relative flex h-full flex-col items-center gap-8 px-4 ${(state.open || state.confirm) && "pointer-events-none opacity-30"}`}
           >
             <div className="flex flex-col items-center gap-2">
                 <span className="text-accent dark:text-accent-dark text-2xl font-semibold text-nowrap md:text-3xl lg:text-4xl">
-                  English Dictionary
+                  Word Burrow
                 </span>
                 <span className="text-heading dark:text-heading-dark text-2xl">
                 Total - {state.words.length}
@@ -698,7 +701,7 @@ const Dictionary = () => {
 
               <button
                 onClick={() => dispatch({ type: "OPEN_FORM" })} //Wrap dispatch in a function to hinder infinite re-render loop
-                className="text-primary dark:text-primary-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl transition"
+                className="text-primary bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl transition"
               >
                 Add
               </button>
@@ -757,7 +760,7 @@ const Dictionary = () => {
                           </div>
                           <div className="flex flex-col justify-center gap-2">
                             <p
-                              className={`text-heading dark:text-heading-dark line-clamp-2 py-1 font-[Poppins] text-2xl font-semibold text-balance ${word.name.length <= 12 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
+                              className={`text-heading dark:text-heading-dark line-clamp-2 py-1 font-semibold text-balance ${word.name.length <= 12 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
                             >
                               {word.name.charAt(0).toUpperCase() +
                                 word.name.slice(1).toLowerCase()}

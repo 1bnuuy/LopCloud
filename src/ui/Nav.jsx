@@ -59,7 +59,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
         <div className="max-xs:hidden relative flex items-center justify-center gap-6 max-sm:absolute max-sm:left-4">
           <FontAwesomeIcon
             icon={faCloud}
-            className={`hover:ring-offset-secondary hover:ring-heading active:ring-heading dark:hover:ring-offset-secondary-dark dark:active:ring-offset-secondary-dark dark:hover:ring-heading-dark dark:active:ring-heading-dark text-primary dark:text-primary-dark bg-heading dark:bg-heading-dark cursor-pointer rounded-md px-[8.25px] py-3 text-2xl transition hover:ring-2 hover:ring-offset-3 active:ring-2 active:ring-offset-3`}
+            className={`ring-offset-secondary ring-heading dark:ring-offset-secondary-dark dark:ring-heading-dark text-primary dark:text-primary-dark bg-heading dark:bg-heading-dark cursor-pointer rounded-md px-[8.25px] py-3 text-2xl transition hover:ring-2 hover:ring-offset-3 active:ring-2 active:ring-offset-3`}
           />
         </div>
 
@@ -105,7 +105,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
                           y: isMobile ? -22 : 0,
                         },
                       }}
-                      className={`pointer-events-none absolute -z-10 rounded-md px-3 py-1 max-lg:mb-30 lg:ml-30 ${link.path === pathname ? "text-primary dark:text-primary-dark bg-accent dark:bg-accent-dark" : "text-heading dark:text-heading-dark bg-secondary dark:bg-secondary-dark"}`}
+                      className={`pointer-events-none absolute -z-10 rounded-md px-3 py-1 max-lg:mb-30 lg:ml-30 ${link.path === pathname ? "text-primary bg-accent dark:bg-accent-dark" : "text-heading dark:text-heading-dark bg-secondary dark:bg-secondary-dark"}`}
                     >
                       {/* pointer-events-none disabled hover for span */}
                       {link.name}
@@ -150,7 +150,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
                   },
                 }}
                 key="label"
-                className={`pointer-events-none absolute rounded-md px-3 py-1 max-lg:mb-30 lg:ml-65 ${ThemeDark ? "text-primary-dark bg-accent-dark" : "text-primary bg-accent"}`}
+                className={`pointer-events-none absolute rounded-md px-3 py-1 max-lg:mb-30 lg:ml-65 text-primary ${ThemeDark ? "bg-accent-dark" : "bg-accent"}`}
               >
                 Theme
               </motion.span>
