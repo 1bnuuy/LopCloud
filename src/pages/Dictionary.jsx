@@ -21,6 +21,7 @@ import {
 import { db } from "../../firebase";
 import { useToast } from "../ui/Toast";
 import { AnimatePresence, motion } from "motion/react";
+import { btnVariants } from "../ui/Theme";
 
 const initialState = {
   words: [],
@@ -101,88 +102,73 @@ const reducer = (state, action) => {
   }
 };
 
+const tagColors = {
+  A1: "bg-green-200",
+  A2: "bg-green-500",
+  B1: "bg-pink-200",
+  B2: "bg-pink-500",
+  C1: "bg-indigo-400",
+  C2: "bg-purple-600",
+};
+
+const wordType = [
+  "noun",
+  "verb",
+  "adjective",
+  "adverb",
+  "pronoun",
+  "preposition",
+  "conjunction",
+  "interjection",
+  "phrase",
+  "idiom",
+  "phrasal verb",
+];
+
 const Dictionary = () => {
   const toast = useToast();
-
-  const toastSuccess = (text, act) => {
-    toast.open((id) => (
-      <div className="bg-secondary dark:bg-secondary-dark flex w-[90vw] max-w-[555px] justify-between gap-3 rounded-lg px-3 py-2">
-        <div className="flex items-center gap-3 self-stretch">
-          <span className="bg-success w-1.5 self-stretch rounded-full" />
-          <div className="flex flex-col">
-            <span className="text-success text-lg font-bold">Hooray!</span>
-            <span className="text-subtext dark:text-subtext-dark text-sm">
-              {text}
-            </span>
-          </div>
-        </div>
-
-        <button
-          className="text-accent dark:text-accent-dark bg-tertiary dark:bg-tertiary-dark hover:text-accent-hovered dark:hover:text-accent-hovered-dark cursor-pointer self-center rounded-md px-2 py-1 font-bold text-nowrap"
-          onClick={() => toast.close(id)}
-        >
-          {act}
-        </button>
-      </div>
-    ));
-  };
-
-  const toastFail = (text, act) => {
-    toast.open((id) => (
-      <div className="bg-secondary dark:bg-secondary-dark flex w-[90vw] max-w-[555px] justify-between gap-3 rounded-lg px-3 py-2">
-        <div className="flex items-center gap-3 self-stretch">
-          <span className="bg-error w-1.5 self-stretch rounded-full" />
-          <div className="flex flex-col">
-            <span className="text-error text-lg font-bold">Uh-oh!</span>
-            <span className="text-subtext dark:text-subtext-dark text-sm">
-              {text}
-            </span>
-          </div>
-        </div>
-
-        <button
-          className="text-accent dark:text-accent-dark bg-tertiary dark:bg-tertiary-dark hover:text-accent-hovered dark:hover:text-accent-hovered-dark cursor-pointer self-center rounded-md px-2 py-1 font-bold text-nowrap"
-          onClick={() => toast.close(id)}
-        >
-          {act}
-        </button>
-      </div>
-    ));
-  };
-
+  const [state, dispatch] = useReducer(reducer, initialState);
   const Name = useRef();
   const Link = useRef();
+
+  const toastPopUp = (mode, Msg, closeMsg) => {
+    toast.open((id) => (
+      <div className="bg-secondary dark:bg-secondary-dark flex w-[90vw] max-w-[555px] justify-between gap-3 rounded-lg px-3 py-2">
+        <div className="flex items-center gap-3 self-stretch">
+          <span
+            className={`${mode ? "bg-success" : "bg-error"} w-1.5 self-stretch rounded-full`}
+          />
+          <div className="flex flex-col">
+            <span
+              className={`${mode ? "text-success" : "text-error"} text-lg font-bold`}
+            >
+              {mode ? "Hooray!" : "Uh-oh!"}
+            </span>
+            <span className="text-subtext dark:text-subtext-dark text-sm">
+              {Msg}
+            </span>
+          </div>
+        </div>
+
+        <motion.button
+          variants={btnVariants}
+          initial="initial"
+          whileHover="hover"
+          whileTap="tap"
+          className="text-accent dark:text-accent-dark bg-tertiary dark:bg-tertiary-dark active:text-accent-hovered dark:active:text-accent-hovered-dark hover:text-accent-hovered dark:hover:text-accent-hovered-dark cursor-pointer self-center rounded-md px-2 py-1 font-bold text-nowrap"
+          onClick={() => toast.close(id)}
+        >
+          {closeMsg}
+        </motion.button>
+      </div>
+    ));
+  };
 
   const DateCreated = new Date().toLocaleDateString("en-GB", {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   });
-
-  const [state, dispatch] = useReducer(reducer, initialState);
-
-  const tagColors = {
-    A1: "bg-green-200",
-    A2: "bg-green-500",
-    B1: "bg-pink-200",
-    B2: "bg-pink-500",
-    C1: "bg-indigo-400",
-    C2: "bg-purple-600",
-  };
-
-  const wordType = [
-    "noun",
-    "verb",
-    "adjective",
-    "adverb",
-    "pronoun",
-    "preposition",
-    "conjunction",
-    "interjection",
-    "phrase",
-    "idiom",
-    "phrasal verb",
-  ];
 
   //Fetch words
   useEffect(() => {
@@ -200,12 +186,14 @@ const Dictionary = () => {
         }));
         dispatch({ type: "FETCH_WORD", payload: wordList });
 
-        toastSuccess(
-          "Poo returned with a basket full of fresh words (and carrots)!",
+        toastPopUp(
+          true,
+          `Poo returned with a basket containing ${wordList.length} carrots!`,
           "Thanks",
         );
       } catch (error) {
-        toastFail(
+        toastPopUp(
+          false,
           "Oops, Poo stepped on the cable… connection lost!",
           "Dismiss",
         );
@@ -254,7 +242,8 @@ const Dictionary = () => {
 
       if (!querySnapshot.empty) {
         dispatch({ type: "DUPLICATED", payload: true });
-        toastFail(
+        toastPopUp(
+          false,
           "This word already exists! Pee and Poo won't let it in!",
           "Okay",
         );
@@ -267,7 +256,7 @@ const Dictionary = () => {
           type: "SUBMIT_WORD",
           payload: { id: docRef.id, ...newWord },
         });
-        toastSuccess("New word created, Pee hugs it tight!", "Hop");
+        toastPopUp(true, "New word created, Pee hugs it tight!", "Hop");
 
         // Reset form
         dispatch({ type: "RESET_FORM" });
@@ -278,10 +267,15 @@ const Dictionary = () => {
           el.checked = false;
         });
       } catch (err) {
-        toastFail("The word ran away before Pee could catch it...", "Oops");
+        toastPopUp(
+          false,
+          "The word ran away before Pee could catch it...",
+          "Oops",
+        );
       }
     } else {
-      toastFail(
+      toastPopUp(
+        false,
         `Hoppy mistake! ${blankFields.join(", ")} ${blankFields.length > 1 ? "fields are" : "field is"} still blank!`,
         "On it",
       );
@@ -300,10 +294,10 @@ const Dictionary = () => {
       });
 
       if (!word.favorite) {
-        toastSuccess("Favorited! Poo stuck a bow", "Done");
+        toastPopUp(true, "Favorited! Poo stuck a bow", "Done");
       }
     } catch (err) {
-      toastFail("Star sticker fell off...", "Burrow");
+      toastPopUp(false, "Star sticker fell off...", "Burrow");
       setTimeout(() => {
         dispatch({ type: "FAVORITE", payload: word.id }); //rollback
       }, 500);
@@ -316,9 +310,10 @@ const Dictionary = () => {
 
     try {
       await deleteDoc(doc(db, "words", word.id));
-      toastSuccess(`Poo made ${word.name.toUpperCase()} vanish!`, "Bye");
+      toastPopUp(true, `Poo made ${word.name.toUpperCase()} vanish!`, "Bye");
     } catch (err) {
-      toastFail(
+      toastPopUp(
+        false,
         "The word refused to leave, Pee is chasing it around!",
         "Retry",
       );
@@ -337,7 +332,7 @@ const Dictionary = () => {
 
   return (
     <>
-      <div className="fixed top-1/2 left-1/2 z-50 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2 transition-all">
+      <div className="fixed top-1/2 left-1/2 z-40 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2 transition">
         <AnimatePresence mode="wait">
           {state.open && (
             <motion.div
@@ -347,15 +342,27 @@ const Dictionary = () => {
               exit={{ scale: 0, opacity: 0 }}
               className="bg-secondary dark:bg-secondary-dark flex flex-col justify-center gap-8 rounded-md p-5"
             >
-              <FontAwesomeIcon
-                icon={faXmark}
-                className="text-primary bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark ml-auto cursor-pointer rounded-md px-1 py-1.75 text-2xl transition-all"
-                onClick={() => dispatch({ type: "OPEN_FORM" })}
-              />
+              <motion.button
+                variants={btnVariants}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                className="ml-auto cursor-pointer"
+              >
+                <FontAwesomeIcon
+                  icon={faXmark}
+                  className="text-primary bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark rounded-md px-1 py-1.75 text-2xl"
+                  onClick={() => dispatch({ type: "OPEN_FORM" })}
+                />
+              </motion.button>
 
               <div className="relative flex flex-wrap gap-3">
                 {Object.entries(tagColors).map(([tag, color]) => (
-                  <div
+                  <motion.div
+                    variants={btnVariants}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
                     key={tag}
                     className={`text-heading relative w-12 text-center font-semibold select-none`}
                   >
@@ -371,15 +378,15 @@ const Dictionary = () => {
                       className="peer absolute top-1/2 left-0 z-50 size-full -translate-y-1/2 cursor-pointer appearance-none"
                     />
                     <span
-                      className={`transition peer-checked:opacity-30 ${color} inline-block size-full rounded-sm px-2 py-0.5`}
+                      className={`peer-checked:opacity-30 ${color} inline-block size-full rounded-sm px-2 py-0.5`}
                     >
                       {tag}
                     </span>
                     <FontAwesomeIcon
                       icon={faCheck}
-                      className="text-accent dark:text-accent-dark absolute left-1/2 z-10 -translate-x-1/2 text-2xl opacity-0 transition peer-checked:opacity-100"
+                      className="text-accent dark:text-accent-dark absolute left-1/2 z-10 -translate-x-1/2 text-2xl opacity-0 peer-checked:opacity-100"
                     />
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
@@ -410,7 +417,11 @@ const Dictionary = () => {
 
               <div className="relative flex flex-wrap gap-2">
                 {wordType.map((type, index) => (
-                  <div
+                  <motion.div
+                    variants={btnVariants}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
                     key={index}
                     className={`relative flex items-center font-semibold text-nowrap select-none`}
                   >
@@ -425,10 +436,10 @@ const Dictionary = () => {
                       value={type}
                       className="peer absolute top-1/2 left-0 size-full -translate-y-1/2 cursor-pointer appearance-none"
                     />
-                    <span className="peer-checked:bg-accent peer-checked:text-primary dark:peer-checked:bg-accent-dark bg-subtext dark:bg-subtext-dark rounded-sm px-2 py-0.5 transition">
+                    <span className="peer-checked:bg-accent peer-checked:text-primary dark:peer-checked:bg-accent-dark bg-subtext dark:bg-subtext-dark rounded-sm px-2 py-0.5">
                       {type}
                     </span>
-                  </div>
+                  </motion.div>
                 ))}
               </div>
 
@@ -446,19 +457,23 @@ const Dictionary = () => {
                 </span>
               </div>
 
-              <button
-                className="text-primary hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold transition"
+              <motion.button
+                variants={btnVariants}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
+                className="text-primary hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold"
                 type="button"
                 onClick={Create}
               >
                 Create
-              </button>
+              </motion.button>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <div className="fixed top-1/2 left-1/2 z-50 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2 transition-all">
+      <div className="fixed top-1/2 left-1/2 z-50 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2">
         <AnimatePresence mode="wait">
           {state.confirm && (
             <motion.div
@@ -604,28 +619,28 @@ const Dictionary = () => {
                       data-name="Path 82"
                       d="M724.46214,449.12032l-49.29069-34.54561a5.30063,5.30063,0,1,1,6.08441-8.6814l49.29069,34.54561a5.30063,5.30063,0,0,1-6.08441,8.6814Z"
                       transform="translate(-139.84793 -192.45672)"
-                      className="fill-primary dark:fill-primary-dark"
+                      className="fill-primary"
                     />
                     <path
                       id="fe48f3fd-992f-41c2-af3b-c30882e26a16-200"
                       data-name="Path 83"
                       d="M713.14975,465.26118l-49.29069-34.54561a5.30063,5.30063,0,1,1,6.0844-8.6814l49.29069,34.54561a5.30063,5.30063,0,0,1-6.0844,8.6814Z"
                       transform="translate(-139.84793 -192.45672)"
-                      className="fill-primary dark:fill-primary-dark"
+                      className="fill-primary"
                     />
                     <path
                       id="e216638f-22ba-49ea-a46c-300c78c4e875-201"
                       data-name="Path 84"
                       d="M701.71568,481.57565,652.425,447.03a5.30063,5.30063,0,1,1,6.0844-8.68141l49.29069,34.54561a5.30063,5.30063,0,0,1-6.0844,8.68141Z"
                       transform="translate(-139.84793 -192.45672)"
-                      className="fill-primary dark:fill-primary-dark"
+                      className="fill-primary"
                     />
                     <path
                       id="ee43e3d8-5f22-4b53-a964-043fec166479-202"
                       data-name="Path 85"
                       d="M724.32359,417.19028l-19.09171-13.38052a5.30063,5.30063,0,1,1,6.0844-8.6814L730.408,408.50887a5.30063,5.30063,0,0,1-6.08441,8.68141Z"
                       transform="translate(-139.84793 -192.45672)"
-                      className="fill-primary dark:fill-primary-dark"
+                      className="fill-primary"
                     />
                   </g>
                 </svg>
@@ -641,18 +656,26 @@ const Dictionary = () => {
                 will hop away for good and cannot be recovered.
               </span>
               <div className="flex gap-5">
-                <button
-                  className="text-heading hover:text-primary hover:bg-accent dark:hover:bg-accent-dark dark:text-heading-dark dark:bg-tertiary-dark bg-tertiary w-full cursor-pointer rounded-md p-1 text-xl transition"
+                <motion.button
+                  variants={btnVariants}
+                  initial="initial"
+                  whileHover="hover"
+                  whileTap="tap"
+                  className="text-heading hover:text-primary active:bg-accent dark:active:bg-accent-dark hover:bg-accent dark:hover:bg-accent-dark dark:text-heading-dark dark:bg-tertiary-dark bg-tertiary w-full cursor-pointer rounded-md p-1 text-xl"
                   type="button"
                   onClick={() => {
                     dispatch({ type: "CONFIRMATION" });
                   }}
                 >
                   Cancel
-                </button>
+                </motion.button>
 
-                <button
-                  className="text-primary bg-error hover:bg-error-hovered w-full cursor-pointer rounded-md p-1 text-xl transition"
+                <motion.button
+                  variants={btnVariants}
+                  initial="initial"
+                  whileHover="hover"
+                  whileTap="tap"
+                  className="text-primary bg-error active:bg-error-hovered hover:bg-error-hovered w-full cursor-pointer rounded-md p-1 text-xl"
                   type="button"
                   onClick={() => {
                     Delete(state.confirmTarget.word, state.confirmTarget.index);
@@ -660,174 +683,166 @@ const Dictionary = () => {
                   }}
                 >
                   Delete
-                </button>
+                </motion.button>
               </div>
             </motion.div>
           )}
         </AnimatePresence>
       </div>
 
-      <section
-       className="dark:bg-primary-dark grid-background bg-primary h-dvh w-screen overflow-hidden pt-8 transition-all max-lg:pb-25 md:pt-15 lg:px-25">
-        <AnimatePresence>
-          <div
-            className={`relative flex h-full flex-col items-center gap-8 px-4 ${(state.open || state.confirm) && "pointer-events-none opacity-30"}`}
-          >
-            <div className="flex flex-col items-center gap-2">
-                <span className="text-accent dark:text-accent-dark text-2xl font-semibold text-nowrap md:text-3xl lg:text-4xl">
-                  Word Burrow
-                </span>
-                <span className="text-heading dark:text-heading-dark text-2xl">
-                Total - {state.words.length}
-              </span>
-              
-            </div>
-            <div className="flex gap-2 relative">
-              <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center space-x-3 rounded-md border-2 px-4 py-2.5 text-2xl">
-                <input
-                  placeholder="Search..."
-                  value={state.search}
-                  onChange={(e) =>
-                    dispatch({ type: "SEARCH", payload: e.target.value })
-                  }
-                  type="text"
-                  className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full outline-none"
-                />
-                <FontAwesomeIcon
-                  icon={faSearch}
-                  className="text-accent dark:text-accent-dark"
-                />
-              </div>
+      <section className="dark:bg-primary-dark grid-background bg-primary h-dvh w-screen overflow-hidden pt-8 transition max-lg:pb-25 md:pt-15 lg:px-30">
+        <div
+          className={`relative flex h-full flex-col items-center justify-center gap-8 px-4 ${(state.open || state.confirm) && "pointer-events-none opacity-30"}`}
+        >
+          {filteredWords.length > 0 && (
+            <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center gap-4 rounded-md border-2 px-3 py-2.5 text-2xl">
+              <FontAwesomeIcon
+                icon={faSearch}
+                className="text-accent dark:text-accent-dark pointer-events-none"
+              />
+              <input
+                placeholder="Search..."
+                value={state.search}
+                onChange={(e) =>
+                  dispatch({ type: "SEARCH", payload: e.target.value })
+                }
+                type="text"
+                className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full outline-none"
+              />
 
-              <button
+              <motion.button
+                variants={btnVariants}
+                initial="initial"
+                whileHover="hover"
+                whileTap="tap"
                 onClick={() => dispatch({ type: "OPEN_FORM" })} //Wrap dispatch in a function to hinder infinite re-render loop
-                className="text-primary bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl transition"
+                className="text-primary active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl"
               >
-                Add
-              </button>
+                +
+              </motion.button>
             </div>
+          )}
 
-            <div className="z-30 mb-10 grid max-h-[calc(100vh_-_375px)] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:grid-cols-2 xl:grid-cols-3">
-              <AnimatePresence>
-                {filteredWords.length === 0 ? (
-                  <div className="absolute left-1/2 flex w-70 -translate-x-1/2 justify-between text-4xl select-none">
-                    <span className="rotate-y-180">🐇</span>
-                    <span className="animate-carrot absolute">🥕</span>
-                    <span>🐇</span>
-                  </div>
-                ) : (
-                  filteredWords
-                    .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
-                    .map((word, index) => {
-                      return (
-                        <motion.div
-                          variants={{
-                            hidden: { scale: 0 },
-                            loaded: (i) => ({
-                              //i value is from custom(index)
-                              scale: 1,
-                              transition: {
-                                delay: i * 0.08,
-                                type: "spring",
-                                stiffness: 150,
-                              },
-                            }),
-                          }}
-                          custom={index}
-                          initial="hidden"
-                          animate="loaded"
-                          exit="hidden"
-                          key={index}
-                          className={`bg-secondary group dark:bg-secondary-dark ${word.favorite ? "border-yellow-600 dark:border-amber-200" : "border-accent dark:border-accent-dark"} max-xs:w-65 relative flex h-60 w-71 flex-col justify-between border-b-4 p-4`}
-                        >
-                          <div className="flex gap-2">
-                            {(Array.isArray(word.tag) && word.tag.length > 0
-                              ? word.tag
-                              : ["N/A"]
-                            )
-                              .filter(Boolean) //removes null/undefined/empty strings
-                              .sort((a, b) => a.localeCompare(b))
-                              .map((t, i) => {
-                                return (
-                                  <span
-                                    className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold`}
-                                    key={i}
-                                  >
-                                    {t || "N/A"}
-                                  </span>
-                                );
-                              })}
+          <div className="z-30 mb-10 grid max-h-[calc(100vh_-_250px)] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:grid-cols-2 xl:grid-cols-3">
+            <AnimatePresence>
+              {filteredWords.length === 0 ? (
+                <div className="absolute left-1/2 flex w-70 -translate-x-1/2 justify-between text-4xl select-none">
+                  <span className="rotate-y-180">🐇</span>
+                  <span className="animate-carrot absolute">🥕</span>
+                  <span>🐇</span>
+                </div>
+              ) : (
+                filteredWords
+                  .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
+                  .map((word, index) => {
+                    return (
+                      <motion.div
+                        variants={{
+                          hidden: { scale: 0 },
+                          loaded: (i) => ({
+                            //i value is from custom(index)
+                            scale: 1,
+                            transition: {
+                              delay: i * 0.08,
+                              type: "spring",
+                              stiffness: 150,
+                            },
+                          }),
+                        }}
+                        custom={index}
+                        initial="hidden"
+                        animate="loaded"
+                        exit="hidden"
+                        key={index}
+                        className={`bg-secondary group dark:bg-secondary-dark ${word.favorite ? "border-yellow-600 dark:border-amber-200" : "border-accent dark:border-accent-dark"} relative flex h-60 w-71 flex-col justify-between border-b-4 p-4`}
+                      >
+                        <div className="flex gap-2">
+                          {(Array.isArray(word.tag) && word.tag.length > 0
+                            ? word.tag
+                            : ["N/A"]
+                          )
+                            .filter(Boolean) //removes null/undefined/empty strings
+                            .sort((a, b) => a.localeCompare(b))
+                            .map((t, i) => {
+                              return (
+                                <span
+                                  className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold`}
+                                  key={i}
+                                >
+                                  {t || "N/A"}
+                                </span>
+                              );
+                            })}
+                        </div>
+                        <div className="flex flex-col justify-center gap-2">
+                          <p
+                            className={`text-heading dark:text-heading-dark line-clamp-2 py-1 font-semibold text-balance ${word.name.length <= 12 ? "text-[2rem]" : word.name.length <= 25 ? "text-[1.8rem]" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
+                          >
+                            {word.name.charAt(0).toUpperCase() +
+                              word.name.slice(1).toLowerCase()}
+                          </p>
+
+                          <div className="flex flex-wrap">
+                            {(Array.isArray(word.type)
+                              ? word.type
+                              : [word.type]
+                            ).map((t, i, arr) => {
+                              return (
+                                <span
+                                  className={`text-subtext dark:text-subtext-dark px-1 text-sm font-semibold`}
+                                  key={i}
+                                >
+                                  {t}
+                                  {i < arr.length - 1 && ","}
+                                </span>
+                              );
+                            })}
                           </div>
-                          <div className="flex flex-col justify-center gap-2">
-                            <p
-                              className={`text-heading dark:text-heading-dark line-clamp-2 py-1 font-semibold text-balance ${word.name.length <= 12 ? "text-4xl" : word.name.length <= 25 ? "text-3xl" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
-                            >
-                              {word.name.charAt(0).toUpperCase() +
-                                word.name.slice(1).toLowerCase()}
-                            </p>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                          <span className="text-subtext dark:text-subtext-dark">
+                            {word.date}
+                          </span>
+                          <a
+                            target="_blank"
+                            href={`https://dictionary.cambridge.org/dictionary/english/${word.link}`}
+                            className="ml-auto flex items-center"
+                          >
+                            <FontAwesomeIcon
+                              icon={faLink}
+                              className="text-heading dark:text-heading-dark cursor-pointer text-xl transition hover:text-blue-500"
+                            />
+                          </a>
 
-                            <div className="flex flex-wrap">
-                              {(Array.isArray(word.type)
-                                ? word.type
-                                : [word.type]
-                              ).map((t, i, arr) => {
-                                return (
-                                  <span
-                                    className={`text-subtext dark:text-subtext-dark px-1 text-sm font-semibold`}
-                                    key={i}
-                                  >
-                                    {t}
-                                    {i < arr.length - 1 && ","}
-                                  </span>
-                                );
-                              })}
-                            </div>
-                          </div>
-                          <div className="flex items-center space-x-2">
-                            <span className="text-subtext dark:text-subtext-dark">
-                              {word.date}
-                            </span>
-                            <a
-                              target="_blank"
-                              href={`https://dictionary.cambridge.org/dictionary/english/${word.link}`}
-                              className="ml-auto flex items-center"
-                            >
-                              <FontAwesomeIcon
-                                icon={faLink}
-                                className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-blue-500"
-                              />
-                            </a>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              dispatch({
+                                type: "CONFIRMATION",
+                                payload: { word, index },
+                              })
+                            }
+                          >
+                            <FontAwesomeIcon
+                              icon={faTrash}
+                              className="text-heading dark:text-heading-dark cursor-pointer text-xl transition hover:text-red-500"
+                            />
+                          </button>
 
-                            <button
-                              type="button"
-                              onClick={() =>
-                                dispatch({
-                                  type: "CONFIRMATION",
-                                  payload: { word, index },
-                                })
-                              }
-                            >
-                              <FontAwesomeIcon
-                                icon={faTrash}
-                                className="text-heading dark:text-heading-dark cursor-pointer text-xl transition-all hover:text-red-500"
-                              />
-                            </button>
-
-                            <button type="button" onClick={() => Favor(word)}>
-                              <FontAwesomeIcon
-                                icon={faStar}
-                                className={`cursor-pointer text-xl transition-all ${word.favorite ? "text-yellow-600 dark:text-amber-200" : "text-heading dark:text-heading-dark hover:text-yellow-300"}`}
-                              />
-                            </button>
-                          </div>
-                        </motion.div>
-                      );
-                    })
-                )}
-              </AnimatePresence>
-            </div>
+                          <button type="button" onClick={() => Favor(word)}>
+                            <FontAwesomeIcon
+                              icon={faStar}
+                              className={`cursor-pointer text-xl transition ${word.favorite ? "text-yellow-600 dark:text-amber-200" : "text-heading dark:text-heading-dark hover:text-yellow-300"}`}
+                            />
+                          </button>
+                        </div>
+                      </motion.div>
+                    );
+                  })
+              )}
+            </AnimatePresence>
           </div>
-        </AnimatePresence>
+        </div>
       </section>
     </>
   );

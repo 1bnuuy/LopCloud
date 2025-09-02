@@ -1,12 +1,17 @@
-# React + Vite
+## LopCloud
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+[LopCloud](https://lopcloud.vercel.app) is my 2nd project and also my very first React project. It originated from my need to keep track of my English words, which paves the way for clearer goals and enhances my study efficiency. Moreover, the app features a clean interface with smooth animations and reliable data storage powered by modern technologies.
 
-Currently, two official plugins are available:
+## Built with
++ React + Vite
++ Tailwind CSS v4
++ Framer Motion
++ Firebase
++ FontAwesomeIcon
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Features
++ Responsiveness: Seamless adaptability across all devices, ensuring a smooth and consistent experience.
++ Animation: The app uses [Framer Motion](https://motion.dev) to deliver fluid, modern animations, enhancing the experience with interactive and dynamic transitions.
++ To-do List: A simple yet effective task manager that helps organize daily study activities and track progress.
++ Dictionary: A personalized English word bank where users can store, categorize, and revisit their vocabulary, supporting long-term learning goals.
++ Light/Dark Theme: Just an indispensable feature that seems to exist and somewhat has become standard in almost every project today.
