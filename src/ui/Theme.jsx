@@ -3,6 +3,12 @@ import { createContext, useContext, useState, useEffect } from "react";
 const Theme = createContext();
 export const useTheme = () => useContext(Theme);
 
+export const btnVariants = {
+  initial: { scale: 1 },
+  hover: { scale: 1.05 },
+  tap: { scale: 0.95 },
+};
+
 export default function ThemeProvider({ children }) {
   const [ThemeDark, setTheme] = useState(
     localStorage.getItem("theme") === "light", //initial theme

@@ -11,6 +11,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { btnVariants } from "./Theme";
 
 const links = [
   {
@@ -54,7 +55,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
   return (
     <>
       <nav
-        className={`bg-secondary dark:bg-secondary-dark max-xs:gap-2 fixed left-4 z-50 flex h-18 w-11/12 items-start justify-between gap-5 rounded-md px-4 text-nowrap transition ease-in-out select-none max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:items-center max-sm:justify-center lg:top-1/2 lg:h-11/12 lg:w-20 lg:-translate-y-1/2 lg:flex-col lg:justify-start lg:py-15 ${ThemeDark ? "dark" : ""}`}
+        className={`bg-secondary dark:bg-secondary-dark max-xs:gap-2 fixed left-4 z-40 flex h-18 w-11/12 items-start justify-between gap-5 rounded-md px-4 text-nowrap transition ease-in-out select-none max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:items-center max-sm:justify-center lg:top-1/2 lg:h-11/12 lg:w-20 lg:-translate-y-1/2 lg:flex-col lg:justify-start lg:py-15 ${ThemeDark ? "dark" : ""}`}
       >
         <div className="max-xs:hidden relative flex items-center justify-center gap-6 max-sm:absolute max-sm:left-4">
           <FontAwesomeIcon
@@ -79,18 +80,26 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
                   className="relative flex items-center gap-6 max-lg:justify-center"
                 >
                   <Link
-                    className={`cursor-pointer text-2xl transition ${link.path === pathname ? "text-accent dark:text-accent-dark" : "hover:text-subtext dark:hover:text-subtext-dark text-heading dark:text-heading-dark"}`}
+                    className={`text-2xl ${link.path === pathname ? "text-accent dark:text-accent-dark" : "hover:text-subtext dark:hover:text-subtext-dark text-heading dark:text-heading-dark"}`}
                     to={link.path}
                   >
                     {link.icon && (
                       <div className="relative flex">
                         <span
-                          className={`absolute ${link.path === pathname ? "block" : "hidden"} bg-accent dark:bg-accent-dark -top-3 h-1.25 w-full cursor-auto max-lg:rounded-b-full lg:top-0 lg:-left-4 lg:h-full lg:w-1.25 lg:rounded-r-full`}
+                          className={`absolute ${link.path === pathname ? "block" : "hidden"} bg-accent dark:bg-accent-dark -top-3 h-1.25 w-full max-lg:rounded-b-full lg:top-0 lg:-left-4 lg:h-full lg:w-1.25 lg:rounded-r-full`}
                         ></span>
-                        <FontAwesomeIcon
-                          icon={link.icon}
-                          className="px-[9px] py-3"
-                        />
+                        <motion.button
+                          variants={btnVariants}
+                          whileHover="hover"
+                          whileTap="tap"
+                          initial="initial"
+                          className="cursor-pointer"
+                        >
+                          <FontAwesomeIcon
+                            icon={link.icon}
+                            className="px-[9px] py-3"
+                          />
+                        </motion.button>
                       </div>
                     )}
                   </Link>
@@ -137,7 +146,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
 
               <FontAwesomeIcon
                 icon={faMoon}
-                className={`${ThemeDark ? "text-accent-dark" : "text-heading"} px-[7px] py-2.5 text-2xl transition`}
+                className={`${ThemeDark ? "text-accent-dark" : "text-heading"} px-[7px] py-2.5 text-2xl`}
               />
 
               <motion.span
@@ -150,7 +159,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
                   },
                 }}
                 key="label"
-                className={`pointer-events-none absolute rounded-md px-3 py-1 max-lg:mb-30 lg:ml-65 text-primary ${ThemeDark ? "bg-accent-dark" : "bg-accent"}`}
+                className={`text-primary pointer-events-none absolute rounded-md px-3 py-1 max-lg:mb-30 lg:ml-65 ${ThemeDark ? "bg-accent-dark" : "bg-accent"}`}
               >
                 Theme
               </motion.span>
@@ -159,7 +168,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
         </div>
 
         <button
-          className="max-xs:block text-accent dark:text-accent-dark absolute right-1 hidden -rotate-90 cursor-pointer rounded-md text-xl transition"
+          className="max-xs:block text-accent dark:text-accent-dark absolute right-1 hidden -rotate-90 cursor-pointer rounded-md text-xl"
           onClick={() => setNextPage(!NextPage)}
         >
           <FontAwesomeIcon

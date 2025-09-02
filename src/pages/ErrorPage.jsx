@@ -1,4 +1,8 @@
 import { Link } from "react-router-dom";
+import { motion } from "motion/react";
+import { btnVariants } from "../ui/Theme";
+
+const MotionLink = motion.create(Link);
 
 const NoPage = () => {
   return (
@@ -277,12 +281,16 @@ const NoPage = () => {
           />
         </g>
       </svg>
-      <Link
+      <MotionLink
+        variants={btnVariants}
+        initial="initial"
+        whileHover="hover"
+        whileTap="tap"
         to="/"
-        className="bg-accent dark:bg-accent-dark text-primary hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark transition rounded-md px-5 py-2 text-xl hover:ring-2 hover:ring-offset-3 active:ring-2 active:ring-offset-3 ring-accent ring-offset-primary dark:ring-accent-dark dark:ring-offset-primary-dark"
+        className="bg-accent dark:bg-accent-dark text-primary hover:bg-accent-hovered active:bg-accent-hovered dark:active:bg-accent-hovered-dark dark:hover:bg-accent-hovered-dark rounded-md px-5 py-2 text-xl"
       >
         Take Me Home
-      </Link>
+      </MotionLink>
     </section>
   );
 };

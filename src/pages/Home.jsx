@@ -1,11 +1,37 @@
 import { motion } from "motion/react";
+import { Link } from "react-router-dom";
+import { btnVariants } from "../ui/Theme";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faWandMagicSparkles } from "@fortawesome/free-solid-svg-icons";
+
+const MotionLink = motion.create(Link);
 
 const Home = () => {
   return (
-    <section
-      className="dark:bg-primary-dark grid-background bg-primary w-screen pt-8 transition-all max-lg:pb-25 md:pt-15 lg:px-25"
-    >
-      <div className="relative flex h-full flex-col items-center gap-5 px-8 py-20 lg:flex-row-reverse lg:justify-around">
+    <section className="dark:bg-primary-dark grid-background bg-primary h-dvh w-screen overflow-x-hidden overflow-y-scroll pt-8 transition max-lg:pb-25 md:pt-15 lg:px-30">
+      <div className="relative flex flex-col-reverse items-center gap-10 p-6 sm:py-12 md:flex-row md:justify-around">
+        <div className="relative flex flex-col items-center justify-center gap-3 md:items-start">
+          <h1 className="text-heading dark:text-heading-dark text-6xl font-bold text-wrap md:text-7xl">
+            LopCloud
+          </h1>
+
+          <span className="text-subtext dark:text-subtext-dark text-xl max-sm:text-lg">
+            Discover. Learn. Organize
+          </span>
+
+          <MotionLink
+            variants={btnVariants}
+            initial="initial"
+            whileHover="hover"
+            whileTap="tap"
+            to="/todolist"
+            className="bg-accent dark:bg-accent-dark text-primary hover:bg-accent-hovered active:bg-accent-hovered dark:active:bg-accent-hovered-dark dark:hover:bg-accent-hovered-dark flex items-center gap-2 rounded-md px-5 py-2 text-xl"
+          >
+            <span>Hop to it</span>
+            <FontAwesomeIcon icon={faWandMagicSparkles} />
+          </MotionLink>
+        </div>
+
         <svg
           className="h-auto max-h-[450px] w-full max-w-[450px]"
           viewBox="0 0 799.87 772.566"
@@ -136,18 +162,6 @@ const Home = () => {
             </g>
           </g>
         </svg>
-
-        <div className="relative flex flex-col items-center justify-center">
-          <span className="text-accent dark:text-accent-dark w-fit text-7xl font-bold tracking-widest uppercase">
-            LopCloud
-          </span>
-
-          <span className="text-heading dark:text-heading-dark text-xl">
-            New ways for learning
-          </span>
-        </div>
-
-        
       </div>
 
       <div className="relative flex h-full flex-col items-center gap-5 px-8 py-20 lg:flex-row-reverse lg:justify-around">
@@ -291,8 +305,149 @@ const Home = () => {
             New ways for learning
           </span>
         </div>
+      </div>
 
-        
+      <div className="relative flex h-full flex-col items-center gap-5 px-8 py-20 lg:flex-row-reverse lg:justify-around">
+        <svg
+          className="h-auto max-h-[450px] w-full max-w-[450px]"
+          viewBox="0 0 799.87 772.566"
+        >
+          <g transform="translate(-743.752 -145.648)">
+            <circle
+              cx="55.255"
+              cy="55.255"
+              r="55.255"
+              className="fill-accent dark:fill-accent-dark"
+              transform="translate(1115.643 419.962)"
+            />
+            <path
+              className="fill-primary"
+              d="M1165.421 496.297a5.731 5.731 0 0 1-3.448-1.145l-.062-.046-12.985-9.942a5.77 5.77 0 1 1 7.018-9.159l8.411 6.449 19.876-25.922a5.769 5.769 0 0 1 8.088-1.068l-.124.168.127-.165a5.775 5.775 0 0 1 1.068 8.088l-23.379 30.49a5.772 5.772 0 0 1-4.59 2.251Z"
+            />
+            <path
+              fill="#f2f2f2"
+              d="M802.211 563.307 766.74 684.559a26.586 26.586 0 0 0 23.2 33.95l38.706 3.388-26.435-158.59Z"
+            />
+            <path
+              d="M802.211 563.307 766.74 684.559a26.586 26.586 0 0 0 23.2 33.95l38.706 3.388-26.435-158.59Z"
+              opacity=".1"
+            />
+            <path
+              fill="#ffb6b6"
+              d="m1124.161 540.937-47.446 78.467-22.34-28.3 43.66-68.356c-1.551-7.953.327-17.183 5.878-25.155 9.712-13.948 26.942-18.739 38.486-10.7s13.028 25.86 3.316 39.808c-5.551 7.971-13.556 12.935-21.553 14.24Z"
+            />
+            <path
+              fill="#090814"
+              d="m828.362 731.157-5.7 19.378.193 19.649s-37.475 45.073-23.669 142.564l175.591-2.2-20.915-156.877-125.5-22.514Z"
+            />
+            <path
+              fill="#ffb6b6"
+              d="M848.122 462.628a49.8 49.8 0 1 1 64.714 47.519l-7.424 5.982 13.328 46.649-15.531 10.987-49.074-40.894s10.6-13.5 16.287-28.729a49.741 49.741 0 0 1-22.3-41.513Z"
+            />
+            <path
+              fill="#e6e6e6"
+              d="M1088.161 538.447c-17.578-.268-50.078 56.15-50.078 56.15l-26.7-9.441-54.9-19.438-42.079-17.319.185 1.272c-.166-.4-.346-.8-.544-1.208-4.424-9.115-17.274-19.84-53.756-17.714l-17.182 13.561-2.336 1.858a52.982 52.982 0 0 0-21.64 3.371c-7.814 3.141-15.627 9-19.323 19.955-1.915 5.65-1.915 17.332-.766 32.173 4.156 53.737 23.524 167.975 23.524 167.975l122.271-16.186 9.02.211s1.072-12.314 2.03-28.439c.594-9.461 1.13-20.2 1.436-30.546.211-7.584.268-14.938.134-21.41-.019-.4-.019-.8-.038-1.207-.364-11.816-1.551-20.376-4.1-21.314 0 0 7.909-.211 19.323-.632 27.577-1.034 75.646-3.352 82.5-7.086 9.69-5.267 60.5-75.952 60.5-75.952s-9.882-28.343-27.481-28.631Z"
+            />
+            <path
+              fill="#010102"
+              d="M949.187 466.303c-3.761-18.4-5.566-27.829-19.238-40.847-3.245.459.857 17.286-17.031 40.726-26 34.074-23.41 2.832-31.1 13.328-1.669 2.279-2.03 10.5-1.481 13.328 2.168 11.176 15 .263 1.481 38.5-2.011 2.974-4.381 2.251-7.4 2.221-.234 0 1.3-.3-4.443-1.481-2.741-.566-6.577-1.234-11.176-2.009-53.425-9-72.29-76.412-31-111.484 9.4-7.98 18.616-14.027 26.621-16.829 24.112-8.44 79.049-2.954 89.6 24.435a83.887 83.887 0 0 1 5.169 40.106Z"
+            />
+            <circle
+              cx="38.104"
+              cy="38.104"
+              r="38.104"
+              fill="#010102"
+              transform="translate(801.049 498.308)"
+            />
+            <path
+              fill="#e6e6e6"
+              d="M1045.793 918.216H745.052c-.776-.138-1.35-1.7-1.3-3.5-.05-1.782.523-3.347 1.3-3.485h300.741c.684.195 1.224 1.449 1.308 3.034.109 1.933-.472 3.694-1.308 3.951Z"
+            />
+            <g transform="translate(1233.109 145.648)">
+              <circle
+                cx="11.973"
+                cy="11.973"
+                r="11.973"
+                className="fill-accent dark:fill-accent-dark"
+                transform="translate(185.342 150.205)"
+              />
+              <path
+                className="fill-primary"
+                d="M196.128 166.745a1.241 1.241 0 0 1-.747-.248l-.013-.01-2.814-2.154a1.25 1.25 0 1 1 1.521-1.985l1.822 1.4 4.307-5.617a1.25 1.25 0 0 1 1.753-.231l-.027.036.028-.036a1.251 1.251 0 0 1 .231 1.753l-5.066 6.607a1.25 1.25 0 0 1-.995.488Z"
+              />
+              <circle
+                cx="11.973"
+                cy="11.973"
+                r="11.973"
+                className="fill-accent dark:fill-accent-dark"
+                transform="translate(185.342 185.203)"
+              />
+              <path
+                className="fill-primary"
+                d="M196.128 201.743a1.242 1.242 0 0 1-.747-.248l-.013-.01-2.814-2.154a1.25 1.25 0 1 1 1.521-1.985l1.822 1.4 4.307-5.617a1.25 1.25 0 0 1 1.753-.231l-.027.036.028-.036a1.252 1.252 0 0 1 .231 1.753l-5.066 6.607a1.25 1.25 0 0 1-.995.488Z"
+              />
+              <circle
+                cx="11.973"
+                cy="11.973"
+                r="11.973"
+                className="fill-accent dark:fill-accent-dark"
+                transform="translate(191.789 225.726)"
+              />
+              <path
+                className="fill-primary"
+                d="M202.575 242.266a1.241 1.241 0 0 1-.747-.248l-.013-.01-2.814-2.154a1.25 1.25 0 1 1 1.521-1.985l1.822 1.4 4.307-5.617a1.25 1.25 0 0 1 1.753-.231l-.027.036.027-.036a1.252 1.252 0 0 1 .231 1.753l-5.066 6.607a1.251 1.251 0 0 1-.995.488Z"
+              />
+              <path
+                className="fill-heading dark:fill-heading-dark"
+                d="M288.774 290.086h-.189.189v-1.8h-.145c.284.01 6.087.174 11.433-6.313 7.967-9.668 14.509-33.6.434-92.715-18.925-79.487-3.141-149.71 4.524-176.212a8.8 8.8 0 0 0-8.466-11.235h-182.78a8.839 8.839 0 0 0-7.128 3.628c-3.247 4.466-7.7 13.047-10.491 28.562l-1.776-.319c2.849-15.852 7.45-24.685 10.808-29.3A10.648 10.648 0 0 1 113.774.01h182.78a10.6 10.6 0 0 1 10.2 13.541c-7.625 26.364-23.328 96.223-4.5 175.293 14.273 59.945 7.411 84.4-.858 94.353-5.456 6.556-11.466 6.889-12.622 6.889Z"
+              />
+              <path
+                className="fill-heading dark:fill-heading-dark"
+                d="M269.27 323.594h-8.974v-1.8h8.83c.286.009 6.087.174 11.433-6.313 7.967-9.668 14.509-33.6.434-92.715-18.925-79.487-3.141-149.71 4.524-176.212a8.8 8.8 0 0 0-8.466-11.235H94.27a8.839 8.839 0 0 0-7.128 3.628c-3.247 4.467-7.7 13.047-10.491 28.562l-1.776-.319c2.849-15.852 7.45-24.685 10.808-29.3a10.648 10.648 0 0 1 8.587-4.372h182.78a10.6 10.6 0 0 1 10.2 13.541c-7.625 26.364-23.328 96.223-4.5 175.293 14.273 59.945 7.411 84.4-.858 94.353-5.458 6.557-11.465 6.889-12.622 6.889Z"
+              />
+              <path
+                className="fill-heading dark:fill-heading-dark"
+                d="M255.585 294.689c-22.868-96.031-3.795-180.881 5.471-212.895a12.888 12.888 0 0 0-12.387-16.449H26.678a12.922 12.922 0 0 0-10.426 5.3c-8.961 12.323-27.556 53.187-6.787 166.256 11.107 60.49 10.941 101.732 7.313 128.9-2.036 15.3-5.176 26.128-8.022 33.432l-.3.774a12.562 12.562 0 0 0-.921 4.651 12.741 12.741 0 0 0 4.172 9.578 12.2 12.2 0 0 0 2.92 2.026 12.347 12.347 0 0 0 2.791 1.022 12.6 12.6 0 0 0 3.012.359h218.559c.028 0 .1.009.23.009 1.4 0 8.7-.405 15.325-8.381 10.039-12.086 18.374-41.778 1.041-114.582Zm-2.662 113.106c-6.493 7.884-13.538 7.681-13.879 7.672H20.421a10.717 10.717 0 0 1-8.869-4.706 10.469 10.469 0 0 1-1.483-8.685 9.024 9.024 0 0 1 .405-1.253 134.816 134.816 0 0 0 7.193-25.843c5.195-28.32 6.161-72.021-6.051-138.47-20.611-112.231-2.385-152.478 6.4-164.571a10.758 10.758 0 0 1 8.658-4.4h221.994a10.687 10.687 0 0 1 10.278 13.64c-9.311 32.188-28.477 117.481-5.489 214.018 17.094 71.789 9.146 100.855-.534 112.598Z"
+              />
+              <path
+                className="fill-primary-dark dark:fill-primary"
+                d="M150.123 169.915H35.75a8.767 8.767 0 1 1 0-17.533h114.373a8.767 8.767 0 0 1 0 17.533ZM150.123 207.675H35.75a8.767 8.767 0 0 1 0-17.533h114.373a8.767 8.767 0 1 1 0 17.533ZM159.333 246.356H44.96a8.767 8.767 0 1 1 0-17.533h114.373a8.767 8.767 0 1 1 0 17.533ZM165.78 286.879H51.407a8.767 8.767 0 1 1 0-17.533H165.78a8.767 8.767 0 1 1 0 17.533Z"
+              />
+              <path
+                className="fill-accent dark:fill-accent-dark"
+                d="M165.828 101.845H83.641a8.767 8.767 0 0 1 0-17.533h82.187a8.767 8.767 0 0 1 0 17.533Z"
+              />
+              <circle
+                cx="11.973"
+                cy="11.973"
+                r="11.973"
+                className="fill-primary-dark dark:fill-primary"
+                transform="translate(199.157 266.14)"
+              />
+              <path
+                className="fill-primary-dark dark:fill-primary"
+                d="M171.306 326.482H56.933a8.767 8.767 0 1 1 0-17.533h114.373a8.767 8.767 0 0 1 0 17.533Z"
+              />
+              <circle
+                cx="11.973"
+                cy="11.973"
+                r="11.973"
+                className="fill-primary-dark dark:fill-primary"
+                transform="translate(204.682 305.742)"
+              />
+            </g>
+          </g>
+        </svg>
+
+        <div className="relative flex flex-col items-center justify-center">
+          <span className="text-accent dark:text-accent-dark w-fit text-7xl font-bold tracking-widest uppercase">
+            LopCloud
+          </span>
+
+          <span className="text-heading dark:text-heading-dark text-xl">
+            New ways for learning
+          </span>
+        </div>
       </div>
     </section>
   );
