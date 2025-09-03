@@ -8,6 +8,7 @@ import {
   faMoon,
   faEnvelope,
   faAnglesDown,
+  faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
@@ -57,17 +58,21 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
       <nav
         className={`bg-secondary dark:bg-secondary-dark max-xs:gap-2 fixed left-4 z-40 flex h-18 w-11/12 items-start justify-between gap-5 rounded-md px-4 text-nowrap transition ease-in-out select-none max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:items-center max-sm:justify-center lg:top-1/2 lg:h-11/12 lg:w-20 lg:-translate-y-1/2 lg:flex-col lg:justify-start lg:py-15 ${ThemeDark ? "dark" : ""}`}
       >
-        <div className="max-xs:hidden relative flex items-center justify-center gap-6 max-sm:absolute max-sm:left-4">
-          <FontAwesomeIcon
-            icon={faCloud}
-            className={`ring-offset-secondary ring-heading dark:ring-offset-secondary-dark dark:ring-heading-dark text-primary dark:text-primary-dark bg-heading dark:bg-heading-dark cursor-pointer rounded-md px-[8.25px] py-3 text-2xl transition hover:ring-2 hover:ring-offset-3 active:ring-2 active:ring-offset-3`}
-          />
-        </div>
+        <motion.button
+            variants={btnVariants}
+              whileHover="hover"
+              whileTap="tap"
+              initial="initial"
+              key="loginButton"
+              className="max-xs:hidden max-sm:absolute max-sm:left-4 bg-tertiary dark:bg-tertiary-dark ring-offset-secondary hover:ring-2 active:ring-2 active:ring-offset-3 hover:ring-offset-3 hover:ring-accent dark:hover:ring-accent-dark active:ring-accent dark:active:ring-accent-dark hover:text-primary active:text-primary ring-tertiary dark:ring-offset-secondary-dark dark:ring-tertiary-dark hover:bg-accent dark:hover:bg-accent-dark active:bg-accent text-heading dark:text-heading-dark dark:active:bg-accent-dark aspect-square cursor-pointer rounded-full text-2xl size-[48px]"
+            >
+              <FontAwesomeIcon icon={faPlus} />
+            </motion.button>
 
         <span className="bg-subtext dark:bg-subtext-dark hidden h-0.75 w-12 lg:block"></span>
 
         <div
-          className={`max-xs:gap-3 flex gap-4 max-lg:w-full max-lg:justify-center max-lg:rounded-md max-lg:py-3 lg:flex-col ${NextPage && "hidden"}`}
+          className={`max-xs:gap-3 flex xs:!flex gap-4 max-lg:w-full max-lg:justify-center max-lg:rounded-md max-lg:py-3 lg:flex-col ${NextPage && "hidden"}`}
         >
           <AnimatePresence>
             {links.map((link, index) => {
@@ -93,7 +98,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
                           whileHover="hover"
                           whileTap="tap"
                           initial="initial"
-                          className="cursor-pointer"
+                          className={`cursor-pointer size-[48px] rounded-lg ${link.path === pathname && "bg-tertiary dark:bg-tertiary-dark"}`}
                         >
                           <FontAwesomeIcon
                             icon={link.icon}
@@ -129,7 +134,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
         <span className="bg-subtext dark:bg-subtext-dark hidden h-0.75 w-12 lg:block"></span>
 
         <div
-          className={`border-accent dark:border-accent-dark ${NextPage ? "max-xs:block" : "max-xs:hidden"} xs:max-sm:absolute xs:max-sm:right-4 relative flex items-center rounded-xl border-3 max-lg:justify-center`}
+          className={`${NextPage ? "max-xs:block" : "max-xs:hidden"} xs:max-sm:absolute xs:max-sm:right-4 flex xs:flex-col gap-6`}
         >
           <AnimatePresence>
             <motion.div
@@ -137,7 +142,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
               whileTap="hover"
               initial="initial"
               key="themeButton"
-              className="relative flex cursor-pointer items-center justify-center"
+              className="border-accent dark:border-accent-dark relative flex cursor-pointer items-center justify-center rounded-xl border-3"
               onClick={ThemeToggle}
             >
               <span
