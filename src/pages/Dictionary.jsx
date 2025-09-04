@@ -17,11 +17,13 @@ import {
   doc,
   where,
   query,
+  onSnapshot,
 } from "firebase/firestore";
 import { db } from "../../firebase";
 import { useToast } from "../ui/Toast";
 import { AnimatePresence, motion } from "motion/react";
 import { btnVariants } from "../ui/Theme";
+import { useAuth } from "../ui/FirebaseAuth";
 
 const initialState = {
   words: [],
@@ -55,8 +57,11 @@ const reducer = (state, action) => {
           : [...state.selectedTags, action.payload],
       };
 
-    case "SUBMIT_WORD":
-      return { ...state, words: [...state.words, action.payload] };
+    case "DELETE":
+      return {
+        ...state,
+        words: state.words.filter((w) => w.id !== action.payload),
+      };
 
     case "FAVORITE":
       return {
@@ -64,12 +69,6 @@ const reducer = (state, action) => {
         words: state.words.map((w) =>
           w.id === action.payload ? { ...w, favorite: !w.favorite } : w,
         ),
-      };
-
-    case "DELETE":
-      return {
-        ...state,
-        words: state.words.filter((w) => w.id !== action.payload),
       };
 
     case "RESET_FORM":
@@ -126,6 +125,7 @@ const wordType = [
 ];
 
 const Dictionary = () => {
+  const {user} = useAuth()
   const toast = useToast();
   const [state, dispatch] = useReducer(reducer, initialState);
   const Name = useRef();
@@ -171,41 +171,40 @@ const Dictionary = () => {
 
   //Fetch words
   useEffect(() => {
-    let isLoaded = true;
+    let firstLoad = true;
 
-    async function fetchWords() {
-      try {
-        const querySnapshot = await getDocs(collection(db, "words"));
+    const DelayTransition = setTimeout(() => {
+      const fetchWords = onSnapshot(
+        collection(db, "words"),
+        (snapshot) => {
+          const wordList = snapshot.docs.map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }));
+          dispatch({ type: "FETCH_WORD", payload: wordList });
 
-        if (!isLoaded) return;
+          if (firstLoad) {
+            toastPopUp(
+              true,
+              `Poo returned with a basket containing ${wordList.length} carrots!`,
+              "Thanks",
+            );
+            firstLoad = false;
+          }
+        },
+        () => {
+          toastPopUp(
+            false,
+            "Oops, Poo stepped on the cable… connection lost!",
+            "Dismiss",
+          );
+        },
+      );
 
-        const wordList = querySnapshot.docs.map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }));
-        dispatch({ type: "FETCH_WORD", payload: wordList });
+      return () => fetchWords();
+    }, 600);
 
-        toastPopUp(
-          true,
-          `Poo returned with a basket containing ${wordList.length} carrots!`,
-          "Thanks",
-        );
-      } catch (error) {
-        toastPopUp(
-          false,
-          "Oops, Poo stepped on the cable… connection lost!",
-          "Dismiss",
-        );
-      }
-    }
-
-    setTimeout(() => {
-      fetchWords();
-    }, 1100);
-
-    return () => {
-      isLoaded = false;
-    };
+    return () => clearTimeout(DelayTransition);
   }, []);
 
   //Add words
@@ -244,11 +243,7 @@ const Dictionary = () => {
       }
 
       try {
-        const docRef = await addDoc(collection(db, "words"), newWord);
-        dispatch({
-          type: "SUBMIT_WORD",
-          payload: { id: docRef.id, ...newWord },
-        });
+        await addDoc(collection(db, "words"), newWord);
         toastPopUp(true, "New word created, Pee hugs it tight!", "Hop");
 
         // Reset form
@@ -276,7 +271,6 @@ const Dictionary = () => {
 
   //Favorite
   const Favor = async (word) => {
-    //update UI immediately
     dispatch({ type: "FAVORITE", payload: word.id });
 
     try {
@@ -292,7 +286,7 @@ const Dictionary = () => {
       toastPopUp(false, "Star sticker fell off...", "Burrow");
       setTimeout(() => {
         dispatch({ type: "FAVORITE", payload: word.id }); //rollback
-      }, 500);
+      }, 300);
     }
   };
 
@@ -311,7 +305,7 @@ const Dictionary = () => {
       );
       setTimeout(() => {
         dispatch({ type: "ROLLBACK", payload: word, index });
-      }, 500);
+      }, 300);
     }
   };
 
@@ -676,8 +670,10 @@ const Dictionary = () => {
         <div
           className={`relative flex h-full flex-col items-center justify-center gap-8 px-4 ${(state.open || state.confirm) && "pointer-events-none opacity-30"}`}
         >
+
+          <h2 className="text-accent">your userID: {user?.uid}</h2>
           {state.words.length > 0 && (
-            <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center gap-4 rounded-md border-2 px-3 py-2.5 text-2xl">
+            <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center gap-4 rounded-md border-2 p-2.5 text-2xl">
               <FontAwesomeIcon
                 icon={faSearch}
                 className="text-accent dark:text-accent-dark pointer-events-none"
@@ -697,8 +693,8 @@ const Dictionary = () => {
                 initial="initial"
                 whileHover="hover"
                 whileTap="tap"
-                onClick={() => dispatch({ type: "OPEN_FORM" })} //Wrap dispatch in a function to hinder infinite re-render loop
-                className="text-primary select-none active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl"
+                onClick={() => dispatch({ type: "OPEN_FORM" })}
+                className="text-primary active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl select-none"
               >
                 +
               </motion.button>
@@ -717,9 +713,9 @@ const Dictionary = () => {
                 filteredWords
                   .sort((a, b) => {
                     const fav = (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0);
-                    if (fav !== 0 ) return fav
+                    if (fav !== 0) return fav;
 
-                    return a.name.localeCompare(b.name)
+                    return a.name.localeCompare(b.name);
                   })
                   .map((word, index) => {
                     return (
@@ -727,7 +723,6 @@ const Dictionary = () => {
                         variants={{
                           hidden: { scale: 0 },
                           loaded: (i) => ({
-                            //i value is from custom(index)
                             scale: 1,
                             transition: {
                               delay: i * 0.08,
@@ -753,7 +748,7 @@ const Dictionary = () => {
                             .map((t, i) => {
                               return (
                                 <span
-                                  className={`${tagColors[t] || "bg-gray-300"} select-none text-heading rounded-sm px-2 font-semibold`}
+                                  className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold select-none`}
                                   key={i}
                                 >
                                   {t || "N/A"}
