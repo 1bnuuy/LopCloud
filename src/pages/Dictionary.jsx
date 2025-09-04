@@ -129,7 +129,6 @@ const Dictionary = () => {
   const toast = useToast();
   const [state, dispatch] = useReducer(reducer, initialState);
   const Name = useRef();
-  const Link = useRef();
 
   const toastPopUp = (mode, Msg, closeMsg) => {
     toast.open((id) => (
@@ -215,10 +214,9 @@ const Dictionary = () => {
 
     const newWord = {
       tag: state.selectedTags,
-      name: Name.current.value.trim(),
+      name: Name.current.value.trim().toLowerCase(),
       type: state.selectedTypes,
       date: DateCreated,
-      link: Link.current.value.trim(),
       favorite: false,
     };
 
@@ -226,13 +224,8 @@ const Dictionary = () => {
 
     if (!Name.current.value) blankFields.push("Name");
     if (!state.selectedTypes.length) blankFields.push("Class");
-    if (!Link.current.value) blankFields.push("Link");
 
-    if (
-      Name.current.value &&
-      state.selectedTypes.length &&
-      Link.current.value
-    ) {
+    if (Name.current.value && state.selectedTypes.length) {
       const wordsRef = collection(db, "words");
       const q = query(
         wordsRef,
@@ -261,7 +254,6 @@ const Dictionary = () => {
         // Reset form
         dispatch({ type: "RESET_FORM" });
         Name.current.value = "";
-        Link.current.value = "";
 
         document.querySelectorAll("input[type=checkbox]").forEach((el) => {
           el.checked = false;
@@ -443,22 +435,12 @@ const Dictionary = () => {
                 ))}
               </div>
 
-              <div className="relative">
-                <input
-                  required
-                  ref={Link}
-                  placeholder="dictionary/english/..."
-                  type="text"
-                  className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark border-accent dark:border-accent-dark w-full rounded-md border-2 px-4 pt-4 pb-3 text-xl outline-none"
-                />
-
-                <span className="bg-secondary dark:bg-secondary-dark text-heading dark:text-heading-dark absolute -top-3 left-5 px-2.5 select-none">
-                  Link
-                </span>
-              </div>
-
               <motion.button
-                variants={btnVariants}
+                variants={{
+                  initial: { scale: 1 },
+                  hover: { scale: 1.05 },
+                  tap: { scale: 0.95 },
+                }}
                 initial="initial"
                 whileHover="hover"
                 whileTap="tap"
@@ -694,7 +676,7 @@ const Dictionary = () => {
         <div
           className={`relative flex h-full flex-col items-center justify-center gap-8 px-4 ${(state.open || state.confirm) && "pointer-events-none opacity-30"}`}
         >
-          {filteredWords.length > 0 && (
+          {state.words.length > 0 && (
             <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center gap-4 rounded-md border-2 px-3 py-2.5 text-2xl">
               <FontAwesomeIcon
                 icon={faSearch}
@@ -716,7 +698,7 @@ const Dictionary = () => {
                 whileHover="hover"
                 whileTap="tap"
                 onClick={() => dispatch({ type: "OPEN_FORM" })} //Wrap dispatch in a function to hinder infinite re-render loop
-                className="text-primary active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl"
+                className="text-primary select-none active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl"
               >
                 +
               </motion.button>
@@ -725,7 +707,7 @@ const Dictionary = () => {
 
           <div className="z-30 mb-10 grid max-h-[calc(100vh_-_250px)] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:grid-cols-2 xl:grid-cols-3">
             <AnimatePresence>
-              {filteredWords.length === 0 ? (
+              {state.words.length === 0 ? (
                 <div className="absolute left-1/2 flex w-70 -translate-x-1/2 justify-between text-4xl select-none">
                   <span className="rotate-y-180">🐇</span>
                   <span className="animate-carrot absolute">🥕</span>
@@ -733,7 +715,12 @@ const Dictionary = () => {
                 </div>
               ) : (
                 filteredWords
-                  .sort((a, b) => (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0))
+                  .sort((a, b) => {
+                    const fav = (b.favorite ? 1 : 0) - (a.favorite ? 1 : 0);
+                    if (fav !== 0 ) return fav
+
+                    return a.name.localeCompare(b.name)
+                  })
                   .map((word, index) => {
                     return (
                       <motion.div
@@ -753,7 +740,7 @@ const Dictionary = () => {
                         initial="hidden"
                         animate="loaded"
                         exit="hidden"
-                        key={index}
+                        key={word.name}
                         className={`bg-secondary group dark:bg-secondary-dark ${word.favorite ? "border-yellow-600 dark:border-amber-200" : "border-accent dark:border-accent-dark"} relative flex h-60 w-71 flex-col justify-between border-b-4 p-4`}
                       >
                         <div className="flex gap-2">
@@ -766,7 +753,7 @@ const Dictionary = () => {
                             .map((t, i) => {
                               return (
                                 <span
-                                  className={`${tagColors[t] || "bg-gray-300"} text-heading rounded-sm px-2 font-semibold`}
+                                  className={`${tagColors[t] || "bg-gray-300"} select-none text-heading rounded-sm px-2 font-semibold`}
                                   key={i}
                                 >
                                   {t || "N/A"}
@@ -776,10 +763,9 @@ const Dictionary = () => {
                         </div>
                         <div className="flex flex-col justify-center gap-2">
                           <p
-                            className={`text-heading dark:text-heading-dark line-clamp-2 py-1 font-semibold text-balance ${word.name.length <= 12 ? "text-[2rem]" : word.name.length <= 25 ? "text-[1.8rem]" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
+                            className={`text-heading dark:text-heading-dark line-clamp-2 py-1 font-semibold text-balance capitalize ${word.name.length <= 12 ? "text-[2rem]" : word.name.length <= 25 ? "text-[1.8rem]" : word.name.length <= 40 ? "text-2xl" : "text-xl"}`}
                           >
-                            {word.name.charAt(0).toUpperCase() +
-                              word.name.slice(1).toLowerCase()}
+                            {word.name}
                           </p>
 
                           <div className="flex flex-wrap">
@@ -803,18 +789,26 @@ const Dictionary = () => {
                           <span className="text-subtext dark:text-subtext-dark">
                             {word.date}
                           </span>
-                          <a
+                          <motion.a
+                            variants={btnVariants}
+                            initial="initial"
+                            whileHover="hover"
+                            whileTap="tap"
                             target="_blank"
-                            href={`https://dictionary.cambridge.org/dictionary/english/${word.link}`}
+                            href={`https://dictionary.cambridge.org/dictionary/english/${word.name}`}
                             className="ml-auto flex items-center"
                           >
                             <FontAwesomeIcon
                               icon={faLink}
-                              className="text-heading dark:text-heading-dark cursor-pointer text-xl transition hover:text-blue-500"
+                              className="text-heading dark:text-heading-dark cursor-pointer text-xl hover:text-blue-500 active:text-blue-500"
                             />
-                          </a>
+                          </motion.a>
 
-                          <button
+                          <motion.button
+                            variants={btnVariants}
+                            initial="initial"
+                            whileHover="hover"
+                            whileTap="tap"
                             type="button"
                             onClick={() =>
                               dispatch({
@@ -825,16 +819,23 @@ const Dictionary = () => {
                           >
                             <FontAwesomeIcon
                               icon={faTrash}
-                              className="text-heading dark:text-heading-dark cursor-pointer text-xl transition hover:text-red-500"
+                              className="text-heading active:text-error dark:text-heading-dark hover:text-error cursor-pointer text-xl"
                             />
-                          </button>
+                          </motion.button>
 
-                          <button type="button" onClick={() => Favor(word)}>
+                          <motion.button
+                            variants={btnVariants}
+                            initial="initial"
+                            whileHover="hover"
+                            whileTap="tap"
+                            type="button"
+                            onClick={() => Favor(word)}
+                          >
                             <FontAwesomeIcon
                               icon={faStar}
-                              className={`cursor-pointer text-xl transition ${word.favorite ? "text-yellow-600 dark:text-amber-200" : "text-heading dark:text-heading-dark hover:text-yellow-300"}`}
+                              className={`cursor-pointer text-xl ${word.favorite ? "text-yellow-600 dark:text-amber-200" : "text-heading dark:text-heading-dark hover:text-yellow-300 active:text-yellow-300"}`}
                             />
-                          </button>
+                          </motion.button>
                         </div>
                       </motion.div>
                     );

@@ -8,7 +8,7 @@ const MotionLink = motion.create(Link);
 
 const Home = () => {
   return (
-    <section className="dark:bg-primary-dark grid-background bg-primary h-dvh w-screen overflow-x-hidden overflow-y-scroll pt-8 transition max-lg:pb-25 md:pt-15 lg:px-30">
+    <section className="dark:bg-primary-dark grid-background bg-primary h-dvh w-screen overflow-x-hidden overflow-y-scroll pt-2 transition max-lg:pb-25 md:pt-15 lg:px-30">
       <div className="relative flex flex-col-reverse items-center gap-10 p-6 sm:py-12 md:flex-row md:justify-around">
         <div className="relative flex flex-col items-center justify-center gap-3 md:items-start">
           <h1 className="text-heading dark:text-heading-dark text-6xl font-bold text-wrap md:text-7xl">

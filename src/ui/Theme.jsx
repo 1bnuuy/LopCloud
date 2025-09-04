@@ -5,8 +5,8 @@ export const useTheme = () => useContext(Theme);
 
 export const btnVariants = {
   initial: { scale: 1 },
-  hover: { scale: 1.05 },
-  tap: { scale: 0.95 },
+  hover: { scale: 1.1 },
+  tap: { scale: 0.9 },
 };
 
 export default function ThemeProvider({ children }) {
