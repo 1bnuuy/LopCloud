@@ -23,7 +23,6 @@ import { db } from "../../firebase";
 import { useToast } from "../ui/Toast";
 import { AnimatePresence, motion } from "motion/react";
 import { btnVariants } from "../ui/Theme";
-import { useAuth } from "../ui/FirebaseAuth";
 
 const initialState = {
   words: [],
@@ -125,7 +124,6 @@ const wordType = [
 ];
 
 const Dictionary = () => {
-  const {user} = useAuth()
   const toast = useToast();
   const [state, dispatch] = useReducer(reducer, initialState);
   const Name = useRef();
@@ -670,8 +668,6 @@ const Dictionary = () => {
         <div
           className={`relative flex h-full flex-col items-center justify-center gap-8 px-4 ${(state.open || state.confirm) && "pointer-events-none opacity-30"}`}
         >
-
-          <h2 className="text-accent">your userID: {user?.uid}</h2>
           {state.words.length > 0 && (
             <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center gap-4 rounded-md border-2 p-2.5 text-2xl">
               <FontAwesomeIcon
