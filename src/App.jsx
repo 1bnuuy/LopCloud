@@ -33,7 +33,7 @@ function App() {
                 initial={{ scaleX: 1 }}
                 animate={{ scaleX: 0 }}
                 exit={{ scaleX: 1 }}
-                transition={{ duration: 0.2, ease: [0, 0.71, 0.2, 1.01] }}
+                transition={{ duration: 0.4, ease: [0, 0.71, 0.2, 1.01] }}
                 className="bg-accent dark:bg-accent-dark fixed top-0 z-50 h-[21vh] w-screen origin-left"
               />
               <motion.span
@@ -41,7 +41,7 @@ function App() {
                 initial={{ scaleX: 1 }}
                 animate={{ scaleX: 0 }}
                 exit={{ scaleX: 1 }}
-                transition={{ duration: 0.2, delay: 0.25, ease: [0, 0.71, 0.2, 1.01] }}
+                transition={{ duration: 0.4, delay: 0.1, ease: [0, 0.71, 0.2, 1.01] }}
                 className="bg-accent dark:bg-accent-dark fixed top-[20vh] z-50 h-[21vh] w-screen origin-right"
               />
               <motion.span
@@ -49,7 +49,7 @@ function App() {
                 initial={{ scaleX: 1 }}
                 animate={{ scaleX: 0 }}
                 exit={{ scaleX: 1 }}
-                transition={{ duration: 0.2, delay: 0.5, ease: [0, 0.71, 0.2, 1.01] }}
+                transition={{ duration: 0.4, delay: 0.2, ease: [0, 0.71, 0.2, 1.01] }}
                 className="bg-accent dark:bg-accent-dark fixed top-[40vh] z-50 h-[21vh] w-screen origin-left"
               />
 
@@ -58,7 +58,7 @@ function App() {
                 initial={{ scaleX: 1 }}
                 animate={{ scaleX: 0 }}
                 exit={{ scaleX: 1 }}
-                transition={{ duration: 0.2, delay: 0.75, ease: [0, 0.71, 0.2, 1.01] }}
+                transition={{ duration: 0.4, delay: 0.3, ease: [0, 0.71, 0.2, 1.01] }}
                 className="bg-accent dark:bg-accent-dark fixed top-[60vh] z-50 h-[21vh] w-screen origin-right"
               />
 
@@ -67,7 +67,7 @@ function App() {
                 initial={{ scaleX: 1 }}
                 animate={{ scaleX: 0 }}
                 exit={{ scaleX: 1 }}
-                transition={{ duration: 0.2, delay: 1, ease: [0, 0.71, 0.2, 1.01] }}
+                transition={{ duration: 0.4, delay: 0.4, ease: [0, 0.71, 0.2, 1.01] }}
                 className="bg-accent dark:bg-accent-dark fixed top-[80vh] z-50 h-[21vh] w-screen origin-left"
               />
               {page}

@@ -1,7 +1,7 @@
 import { createContext, useContext, useState, useEffect } from "react";
 
-const Theme = createContext();
-export const useTheme = () => useContext(Theme);
+const ThemeContext = createContext();
+export const useTheme = () => useContext(ThemeContext);
 
 export const btnVariants = {
   initial: { scale: 1 },
@@ -35,8 +35,8 @@ export default function ThemeProvider({ children }) {
   }, []);
 
   return (
-    <Theme.Provider value={{ ThemeDark, ThemeToggle }}>
+    <ThemeContext.Provider value={{ ThemeDark, ThemeToggle }}>
       {children}
-    </Theme.Provider>
+    </ThemeContext.Provider>
   );
 }
