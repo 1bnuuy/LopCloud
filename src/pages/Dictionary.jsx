@@ -7,6 +7,7 @@ import {
   faLink,
   faXmark,
   faCheck,
+  faLock,
 } from "@fortawesome/free-solid-svg-icons";
 import {
   collection,
@@ -23,7 +24,10 @@ import { db } from "../../firebase";
 import { useToast } from "../ui/Toast";
 import { AnimatePresence, motion } from "motion/react";
 import { btnVariants } from "../ui/Theme";
-import { useAuth } from "../ui/FirebaseAuth";
+import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
+
+const MotionLink = motion.create(Link);
 
 const initialState = {
   words: [],
@@ -34,6 +38,7 @@ const initialState = {
   open: false,
   confirm: false,
   confirmTarget: null,
+  adminAccess: true,
 };
 
 const reducer = (state, action) => {
@@ -96,6 +101,9 @@ const reducer = (state, action) => {
 
       return { ...state, words: rw };
 
+    case "ADMIN_ACCESS":
+      return { ...state, adminAccess: !state.adminAccess };
+
     default:
       return state;
   }
@@ -125,17 +133,20 @@ const wordType = [
 ];
 
 const Dictionary = () => {
-  const {user} = useAuth()
+  const isAdminPanel = useLocation().pathname.startsWith("/bnuuyPanel");
   const toast = useToast();
   const [state, dispatch] = useReducer(reducer, initialState);
   const Name = useRef();
+  const AdminPassword = useRef();
 
   const toastPopUp = (mode, Msg, closeMsg) => {
     toast.open((id) => (
-      <div className="bg-secondary dark:bg-secondary-dark flex w-[90vw] max-w-[555px] justify-between gap-3 rounded-lg px-3 py-2">
-        <div className="flex items-center gap-3 self-stretch">
+      <div
+        className={`bg-secondary border-2 ${mode ? "border-success" : "border-error"} dark:bg-secondary-dark flex w-[90vw] max-w-[555px] justify-between gap-3 rounded-lg px-3 py-2`}
+      >
+        <div className="flex items-center gap-3">
           <span
-            className={`${mode ? "bg-success" : "bg-error"} w-1.5 self-stretch rounded-full`}
+            className={`${mode ? "bg-success" : "bg-error"} h-full min-w-1.5 rounded-full`}
           />
           <div className="flex flex-col">
             <span
@@ -280,10 +291,24 @@ const Dictionary = () => {
       });
 
       if (!word.favorite) {
-        toastPopUp(true, "Favorited! Poo stuck a bow", "Done");
+        toastPopUp(
+          true,
+          `Favorited! Poo put a bow on ${word.name.toUpperCase()}.`,
+          "Done",
+        );
+      } else {
+        toastPopUp(
+          true,
+          `${word.name.toUpperCase()} is no longer a favorite, but still adorable!`,
+          "Done",
+        );
       }
     } catch (err) {
-      toastPopUp(false, "Star sticker fell off...", "Burrow");
+      toastPopUp(
+        false,
+        `Star sticker fell off ${word.name.toUpperCase()}...`,
+        "Burrow",
+      );
       setTimeout(() => {
         dispatch({ type: "FAVORITE", payload: word.id }); //rollback
       }, 300);
@@ -315,6 +340,22 @@ const Dictionary = () => {
       return item.name?.toLowerCase().includes(state.search.toLowerCase());
     });
   }, [state.words, state.search]);
+
+  const AdminAccessCheck = () => {
+    const validPasswords = import.meta.env.VITE_ADMIN_PASSWORDS.split(",");
+    const isValidPassword = (password) => validPasswords.includes(password);
+    
+    if (isValidPassword(AdminPassword.current.value)) {
+      dispatch({ type: "ADMIN_ACCESS" });
+      toastPopUp(true, "Access granted, the carrot vault awaits.", "Bnuuy");
+    } else {
+      toastPopUp(
+        false,
+        "Oops, you have wandered off the path! This area is for admins only.",
+        "Sorry",
+      );
+    }
+  };
 
   return (
     <>
@@ -438,7 +479,7 @@ const Dictionary = () => {
                 initial="initial"
                 whileHover="hover"
                 whileTap="tap"
-                className="text-primary hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold"
+                className="text-primary hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold select-none"
                 type="button"
                 onClick={Create}
               >
@@ -637,7 +678,7 @@ const Dictionary = () => {
                   initial="initial"
                   whileHover="hover"
                   whileTap="tap"
-                  className="text-heading hover:text-primary active:bg-accent dark:active:bg-accent-dark hover:bg-accent dark:hover:bg-accent-dark dark:text-heading-dark dark:bg-tertiary-dark bg-tertiary w-full cursor-pointer rounded-md p-1 text-xl"
+                  className="text-heading hover:text-primary active:bg-accent dark:active:bg-accent-dark hover:bg-accent dark:hover:bg-accent-dark dark:text-heading-dark dark:bg-tertiary-dark bg-tertiary w-full cursor-pointer rounded-md p-1 text-xl select-none"
                   type="button"
                   onClick={() => {
                     dispatch({ type: "CONFIRMATION" });
@@ -651,7 +692,7 @@ const Dictionary = () => {
                   initial="initial"
                   whileHover="hover"
                   whileTap="tap"
-                  className="text-primary bg-error active:bg-error-hovered hover:bg-error-hovered w-full cursor-pointer rounded-md p-1 text-xl"
+                  className="text-primary bg-error active:bg-error-hovered hover:bg-error-hovered w-full cursor-pointer rounded-md p-1 text-xl select-none"
                   type="button"
                   onClick={() => {
                     Delete(state.confirmTarget.word, state.confirmTarget.index);
@@ -666,17 +707,72 @@ const Dictionary = () => {
         </AnimatePresence>
       </div>
 
+      {isAdminPanel && state.adminAccess && (
+        <div className="fixed top-1/2 left-1/2 z-50 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2">
+          <AnimatePresence>
+            <motion.div
+              initial={{ scale: 0, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-secondary dark:bg-secondary-dark relative flex flex-col justify-center gap-5 rounded-lg p-5 text-center"
+            >
+              <span className="text-heading dark:text-heading-dark text-2xl font-bold">
+                Admin Access: Enter Password
+              </span>
+
+              <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full items-center gap-4 rounded-md border-2 py-2 px-3 text-2xl">
+              <input
+                autoComplete="new-password"
+                required
+                ref={AdminPassword}
+                placeholder="Password"
+                type="password"
+                name="passwordAdmin"
+                className={`placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full outline-none`}
+              />
+              <FontAwesomeIcon
+                icon={faLock}
+                className="text-accent dark:text-accent-dark pointer-events-none"
+              />
+            </div>
+
+              <div className="flex gap-5">
+                <MotionLink
+                  variants={btnVariants}
+                  initial="initial"
+                  whileHover="hover"
+                  whileTap="tap"
+                  className="text-primary bg-error active:bg-error-hovered hover:bg-error-hovered w-full cursor-pointer rounded-md p-1 text-xl select-none"
+                  to="/"
+                >
+                  Take Me Back
+                </MotionLink>
+
+                <motion.button
+                  variants={btnVariants}
+                  initial="initial"
+                  whileHover="hover"
+                  whileTap="tap"
+                  className="text-heading hover:text-primary active:bg-success hover:bg-success dark:text-heading-dark dark:bg-tertiary-dark bg-tertiary w-full cursor-pointer rounded-md p-1 text-xl select-none"
+                  type="button"
+                  onClick={AdminAccessCheck}
+                >
+                  Log in
+                </motion.button>
+              </div>
+            </motion.div>
+          </AnimatePresence>
+        </div>
+      )}
+
       <section className="dark:bg-primary-dark grid-background bg-primary h-dvh w-screen overflow-hidden pt-8 transition max-lg:pb-25 md:pt-15 lg:px-30">
         <div
-          className={`relative flex h-full flex-col items-center justify-center gap-8 px-4 ${(state.open || state.confirm) && "pointer-events-none opacity-30"}`}
+          className={`relative flex h-full flex-col items-center justify-center gap-8 px-4 ${(state.open || state.confirm || (isAdminPanel && state.adminAccess)) && "pointer-events-none opacity-30"}`}
         >
-
-          <h2 className="text-accent">your userID: {user?.uid}</h2>
           {state.words.length > 0 && (
             <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center gap-4 rounded-md border-2 p-2.5 text-2xl">
               <FontAwesomeIcon
                 icon={faSearch}
-                className="text-accent dark:text-accent-dark pointer-events-none"
+                className="text-accent dark:text-accent-dark pointer-events-none ml-1"
               />
               <input
                 placeholder="Search..."
@@ -688,16 +784,18 @@ const Dictionary = () => {
                 className="placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full outline-none"
               />
 
-              <motion.button
-                variants={btnVariants}
-                initial="initial"
-                whileHover="hover"
-                whileTap="tap"
-                onClick={() => dispatch({ type: "OPEN_FORM" })}
-                className="text-primary active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl select-none"
-              >
-                +
-              </motion.button>
+              {isAdminPanel && (
+                <motion.button
+                  variants={btnVariants}
+                  initial="initial"
+                  whileHover="hover"
+                  whileTap="tap"
+                  onClick={() => dispatch({ type: "OPEN_FORM" })}
+                  className="text-primary active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark cursor-pointer rounded-md px-5 text-2xl select-none"
+                >
+                  +
+                </motion.button>
+              )}
             </div>
           )}
 
@@ -799,24 +897,28 @@ const Dictionary = () => {
                             />
                           </motion.a>
 
-                          <motion.button
-                            variants={btnVariants}
-                            initial="initial"
-                            whileHover="hover"
-                            whileTap="tap"
-                            type="button"
-                            onClick={() =>
-                              dispatch({
-                                type: "CONFIRMATION",
-                                payload: { word, index },
-                              })
-                            }
-                          >
-                            <FontAwesomeIcon
-                              icon={faTrash}
-                              className="text-heading active:text-error dark:text-heading-dark hover:text-error cursor-pointer text-xl"
-                            />
-                          </motion.button>
+                          {isAdminPanel && (
+                            <>
+                              <motion.button
+                                variants={btnVariants}
+                                initial="initial"
+                                whileHover="hover"
+                                whileTap="tap"
+                                type="button"
+                                onClick={() =>
+                                  dispatch({
+                                    type: "CONFIRMATION",
+                                    payload: { word, index },
+                                  })
+                                }
+                              >
+                                <FontAwesomeIcon
+                                  icon={faTrash}
+                                  className="text-heading active:text-error dark:text-heading-dark hover:text-error cursor-pointer text-xl"
+                                />
+                              </motion.button>
+                            </>
+                          )}
 
                           <motion.button
                             variants={btnVariants}

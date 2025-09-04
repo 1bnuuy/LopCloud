@@ -13,7 +13,6 @@ import ErrorPage from "./pages/ErrorPage.jsx";
 
 import ToastProvider from "./ui/Toast.jsx";
 import ThemeProvider from "./ui/Theme.jsx";
-import AuthProvider from "./ui/FirebaseAuth.jsx";
 
 const router = createBrowserRouter([
   {
@@ -23,19 +22,18 @@ const router = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "todolist", element: <TodoList /> },
       { path: "dictionary", element: <Dictionary /> },
+      { path: "bnuuyPanel/dictionary", element: <Dictionary /> }, //Admin route :3
       { path: "contact", element: <Contact /> },
       { path: "*", element: <ErrorPage /> },
     ],
   },
-]); // This is the key for <Outlet /> in App.jsx to work omfg
+]);
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
     <ThemeProvider>
       <ToastProvider>
-        <AuthProvider>
-          <RouterProvider router={router} />
-        </AuthProvider>
+        <RouterProvider router={router} />
       </ToastProvider>
     </ThemeProvider>
   </StrictMode>,
