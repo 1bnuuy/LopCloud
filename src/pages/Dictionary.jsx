@@ -38,7 +38,7 @@ const initialState = {
   open: false,
   confirm: false,
   confirmTarget: null,
-  adminAccess: true,
+  adminAccess: false,
 };
 
 const reducer = (state, action) => {
@@ -235,6 +235,7 @@ const Dictionary = () => {
     if (!Name.current.value) blankFields.push("Name");
     if (!state.selectedTypes.length) blankFields.push("Class");
 
+    if (isAdminPanel && state.adminAccess) {
     if (Name.current.value && state.selectedTypes.length) {
       const wordsRef = collection(db, "words");
       const q = query(
@@ -278,6 +279,13 @@ const Dictionary = () => {
         "On it",
       );
     }
+  } else {
+    toastPopUp(
+        false,
+        "You don't have admin access, get out!",
+        "Oh...",
+      );
+  }
   };
 
   //Favorite
@@ -317,20 +325,26 @@ const Dictionary = () => {
 
   //Delete
   const Delete = async (word, index) => {
-    dispatch({ type: "DELETE", payload: word.id });
+    if (isAdminPanel && state.adminAccess) {
+      dispatch({ type: "DELETE", payload: word.id });
 
-    try {
-      await deleteDoc(doc(db, "words", word.id));
-      toastPopUp(true, `Poo made ${word.name.toUpperCase()} vanish!`, "Bye");
-    } catch (err) {
-      toastPopUp(
-        false,
-        "The word refused to leave, Pee is chasing it around!",
-        "Retry",
-      );
-      setTimeout(() => {
-        dispatch({ type: "ROLLBACK", payload: word, index });
-      }, 300);
+      try {
+        await deleteDoc(doc(db, "words", word.id));
+        toastPopUp(true, `Poo made ${word.name.toUpperCase()} vanish!`, "Bye");
+
+      } catch (err) {
+        toastPopUp(
+          false,
+          "The word refused to leave, Pee is chasing it around!",
+          "Retry",
+        );
+        setTimeout(() => {
+          dispatch({ type: "ROLLBACK", payload: word, index });
+        }, 300);
+      }
+
+    } else {
+      toastPopUp(false, "Nuh uh! Don't even try to cheat!", "Aww");
     }
   };
 
@@ -341,19 +355,17 @@ const Dictionary = () => {
     });
   }, [state.words, state.search]);
 
-  const AdminAccessCheck = () => {
+  const AdminAccessCheck = (e) => {
+    e.preventDefault();
+
     const validPasswords = import.meta.env.VITE_ADMIN_PASSWORDS.split(",");
     const isValidPassword = (password) => validPasswords.includes(password);
-    
+
     if (isValidPassword(AdminPassword.current.value)) {
       dispatch({ type: "ADMIN_ACCESS" });
       toastPopUp(true, "Access granted, the carrot vault awaits.", "Bnuuy");
     } else {
-      toastPopUp(
-        false,
-        "Oops, you have wandered off the path! This area is for admins only.",
-        "Sorry",
-      );
+      toastPopUp(false, "Oops, this area is for admins only!", "Sorry");
     }
   };
 
@@ -362,8 +374,9 @@ const Dictionary = () => {
       <div className="fixed top-1/2 left-1/2 z-40 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2 transition">
         <AnimatePresence mode="wait">
           {state.open && (
-            <motion.div
+            <motion.form
               key="form"
+              onSubmit={(e) => Create(e)}
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
@@ -480,17 +493,15 @@ const Dictionary = () => {
                 whileHover="hover"
                 whileTap="tap"
                 className="text-primary hover:bg-accent-hovered dark:hover:bg-accent-hovered-dark active:bg-accent-hovered dark:active:bg-accent-hovered-dark bg-accent dark:bg-accent-dark cursor-pointer rounded-md p-1 text-xl font-semibold select-none"
-                type="button"
-                onClick={Create}
               >
                 Create
               </motion.button>
-            </motion.div>
+            </motion.form>
           )}
         </AnimatePresence>
       </div>
 
-      <div className="fixed top-1/2 left-1/2 z-50 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2">
+      <div className="fixed top-1/2 left-1/2 z-40 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2">
         <AnimatePresence mode="wait">
           {state.confirm && (
             <motion.div
@@ -707,58 +718,62 @@ const Dictionary = () => {
         </AnimatePresence>
       </div>
 
-      {isAdminPanel && state.adminAccess && (
-        <div className="fixed top-1/2 left-1/2 z-50 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2">
+      {isAdminPanel && !state.adminAccess && (
+        <div className="fixed top-1/2 left-1/2 z-40 w-11/12 max-w-[650px] min-w-[200px] -translate-x-1/2 -translate-y-1/2">
           <AnimatePresence>
             <motion.div
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              className="bg-secondary dark:bg-secondary-dark relative flex flex-col justify-center gap-5 rounded-lg p-5 text-center"
+              className="bg-secondary dark:bg-secondary-dark relative space-y-5 rounded-lg p-5 text-center"
             >
-              <span className="text-heading dark:text-heading-dark text-2xl font-bold">
-                Admin Access: Enter Password
-              </span>
+              <p className="text-heading dark:text-heading-dark text-3xl font-bold">
+                Admin Access
+              </p>
 
-              <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full items-center gap-4 rounded-md border-2 py-2 px-3 text-2xl">
-              <input
-                autoComplete="new-password"
-                required
-                ref={AdminPassword}
-                placeholder="Password"
-                type="password"
-                name="passwordAdmin"
-                className={`placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full outline-none`}
-              />
-              <FontAwesomeIcon
-                icon={faLock}
-                className="text-accent dark:text-accent-dark pointer-events-none"
-              />
-            </div>
+              <form
+                autoComplete="off"
+                className="space-y-5"
+                onSubmit={(e) => AdminAccessCheck(e)}
+              >
+                <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full items-center gap-4 rounded-md border-2 px-3 py-2 text-2xl">
+                  <input
+                    autoComplete="new-password"
+                    required
+                    ref={AdminPassword}
+                    placeholder="Password"
+                    type="password"
+                    name="passwordAdmin"
+                    className={`placeholder:text-subtext dark:placeholder:text-subtext-dark text-heading dark:text-heading-dark w-full outline-none`}
+                  />
+                  <FontAwesomeIcon
+                    icon={faLock}
+                    className="text-accent dark:text-accent-dark pointer-events-none"
+                  />
+                </div>
 
-              <div className="flex gap-5">
-                <MotionLink
-                  variants={btnVariants}
-                  initial="initial"
-                  whileHover="hover"
-                  whileTap="tap"
-                  className="text-primary bg-error active:bg-error-hovered hover:bg-error-hovered w-full cursor-pointer rounded-md p-1 text-xl select-none"
-                  to="/"
-                >
-                  Take Me Back
-                </MotionLink>
+                <div className="flex gap-5">
+                  <MotionLink
+                    variants={btnVariants}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
+                    className="text-primary bg-error active:bg-error-hovered hover:bg-error-hovered w-full cursor-pointer rounded-md p-1 text-xl select-none"
+                    to="/"
+                  >
+                    Return
+                  </MotionLink>
 
-                <motion.button
-                  variants={btnVariants}
-                  initial="initial"
-                  whileHover="hover"
-                  whileTap="tap"
-                  className="text-heading hover:text-primary active:bg-success hover:bg-success dark:text-heading-dark dark:bg-tertiary-dark bg-tertiary w-full cursor-pointer rounded-md p-1 text-xl select-none"
-                  type="button"
-                  onClick={AdminAccessCheck}
-                >
-                  Log in
-                </motion.button>
-              </div>
+                  <motion.button
+                    variants={btnVariants}
+                    initial="initial"
+                    whileHover="hover"
+                    whileTap="tap"
+                    className="text-heading hover:text-primary active:bg-success hover:bg-success dark:text-heading-dark dark:bg-tertiary-dark bg-tertiary w-full cursor-pointer rounded-md p-1 text-xl select-none"
+                  >
+                    Log in
+                  </motion.button>
+                </div>
+              </form>
             </motion.div>
           </AnimatePresence>
         </div>
@@ -766,7 +781,7 @@ const Dictionary = () => {
 
       <section className="dark:bg-primary-dark grid-background bg-primary h-dvh w-screen overflow-hidden pt-8 transition max-lg:pb-25 md:pt-15 lg:px-30">
         <div
-          className={`relative flex h-full flex-col items-center justify-center gap-8 px-4 ${(state.open || state.confirm || (isAdminPanel && state.adminAccess)) && "pointer-events-none opacity-30"}`}
+          className={`relative flex h-full flex-col items-center justify-center gap-8 px-4 ${(state.open || state.confirm || (isAdminPanel && !state.adminAccess)) && "pointer-events-none opacity-30"}`}
         >
           {state.words.length > 0 && (
             <div className="bg-secondary dark:bg-secondary-dark border-accent dark:border-accent-dark flex w-full max-w-[450px] min-w-[200px] items-center gap-4 rounded-md border-2 p-2.5 text-2xl">
@@ -799,7 +814,7 @@ const Dictionary = () => {
             </div>
           )}
 
-          <div className="z-30 mb-10 grid max-h-[calc(100vh_-_250px)] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:grid-cols-2 xl:grid-cols-3">
+          <div className="z-30 mb-10 grid max-h-[calc(100vh_-_250px)] min-w-[300px] auto-rows-min grid-cols-1 gap-5 overflow-x-hidden overflow-y-auto px-3 pb-5 md:grid-cols-2 xl:grid-cols-3">
             <AnimatePresence>
               {state.words.length === 0 ? (
                 <div className="absolute left-1/2 flex w-70 -translate-x-1/2 justify-between text-4xl select-none">

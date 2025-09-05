@@ -13,6 +13,7 @@ import {
 import { useState, useEffect } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { btnVariants } from "./Theme";
+import Logo from "../assets/logo.webp";
 
 const links = [
   {
@@ -56,23 +57,23 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
   return (
     <>
       <nav
-        className={`bg-secondary dark:bg-secondary-dark max-xs:gap-2 fixed left-4 z-40 flex h-18 w-11/12 items-start justify-between gap-5 rounded-md px-4 text-nowrap transition ease-in-out select-none max-lg:bottom-4 max-lg:left-1/2 max-lg:-translate-x-1/2 max-lg:items-center max-sm:justify-center lg:top-1/2 lg:h-11/12 lg:w-20 lg:-translate-y-1/2 lg:flex-col lg:justify-start lg:py-15 ${ThemeDark ? "dark" : ""}`}
+        className={`bg-secondary dark:bg-secondary-dark max-xs:gap-2 fixed left-4 z-40 flex items-start justify-between gap-8 rounded-md px-4 text-nowrap transition ease-in-out select-none max-lg:bottom-4 max-lg:left-1/2 max-lg:h-18 max-lg:min-w-[260px] max-lg:-translate-x-1/2 max-lg:items-center max-lg:px-8 lg:top-1/2 lg:w-20 lg:-translate-y-1/2 lg:flex-col lg:py-8 ${ThemeDark ? "dark" : ""}`}
       >
         <motion.button
-            variants={btnVariants}
-              whileHover="hover"
-              whileTap="tap"
-              initial="initial"
-              key="loginButton"
-              className="max-xs:hidden max-sm:absolute max-sm:left-4 bg-tertiary dark:bg-tertiary-dark ring-offset-secondary hover:ring-2 active:ring-2 active:ring-offset-3 hover:ring-offset-3 hover:ring-accent dark:hover:ring-accent-dark active:ring-accent dark:active:ring-accent-dark hover:text-primary active:text-primary ring-tertiary dark:ring-offset-secondary-dark dark:ring-tertiary-dark hover:bg-accent dark:hover:bg-accent-dark active:bg-accent text-heading dark:text-heading-dark dark:active:bg-accent-dark aspect-square cursor-pointer rounded-full text-2xl size-[48px]"
-            >
-              <FontAwesomeIcon icon={faPlus} />
-            </motion.button>
+          variants={btnVariants}
+          whileHover="hover"
+          whileTap="tap"
+          initial="initial"
+          key="loginButton"
+          className={`ring-offset-secondary ${NextPage ? "max-xs:block" : "max-xs:hidden"} hover:ring-accent dark:hover:ring-accent-dark active:ring-accent dark:active:ring-accent-dark ring-tertiary dark:ring-offset-secondary-dark dark:ring-tertiary-dark aspect-square min-w-[48px] basis-[48px] cursor-pointer overflow-hidden rounded-md hover:ring-2 hover:ring-offset-3 active:ring-2 active:ring-offset-3`}
+        >
+          <img src={Logo} alt="bnuuy" loading="lazy" />
+        </motion.button>
 
         <span className="bg-subtext dark:bg-subtext-dark hidden h-0.75 w-12 lg:block"></span>
 
         <div
-          className={`max-xs:gap-3 flex xs:!flex gap-4 max-lg:w-full max-lg:justify-center max-lg:rounded-md max-lg:py-3 lg:flex-col ${NextPage && "hidden"}`}
+          className={`max-xs:gap-3 flex gap-4 max-lg:w-full max-lg:justify-center max-lg:rounded-md lg:flex-col ${NextPage && "hidden"}`}
         >
           <AnimatePresence>
             {links.map((link, index) => {
@@ -98,7 +99,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
                           whileHover="hover"
                           whileTap="tap"
                           initial="initial"
-                          className={`cursor-pointer size-[48px] rounded-lg ${link.path === pathname && "bg-tertiary dark:bg-tertiary-dark"}`}
+                          className={`size-[48px] cursor-pointer rounded-md ${link.path === pathname && "bg-tertiary dark:bg-tertiary-dark"}`}
                         >
                           <FontAwesomeIcon
                             icon={link.icon}
@@ -119,7 +120,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
                           y: isMobile ? -22 : 0,
                         },
                       }}
-                      className={`pointer-events-none absolute -z-10 rounded-md px-3 py-1 max-lg:mb-30 lg:ml-30 ${link.path === pathname ? "text-primary bg-accent dark:bg-accent-dark" : "text-heading dark:text-heading-dark bg-secondary dark:bg-secondary-dark"}`}
+                      className={`pointer-events-none absolute z-40 rounded-md px-3 py-1 max-lg:mb-30 lg:ml-30 ${link.path === pathname ? "text-primary bg-accent dark:bg-accent-dark" : "text-heading dark:text-heading-dark bg-secondary dark:bg-secondary-dark"}`}
                     >
                       {/* pointer-events-none disabled hover for span */}
                       {link.name}
@@ -134,7 +135,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
         <span className="bg-subtext dark:bg-subtext-dark hidden h-0.75 w-12 lg:block"></span>
 
         <div
-          className={`${NextPage ? "max-xs:block" : "max-xs:hidden"} xs:max-sm:absolute xs:max-sm:right-4 flex xs:flex-col gap-6`}
+          className={`${NextPage ? "max-xs:block" : "max-xs:hidden"} xs:flex-col flex gap-6`}
         >
           <AnimatePresence>
             <motion.div
@@ -142,7 +143,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
               whileTap="hover"
               initial="initial"
               key="themeButton"
-              className="border-accent dark:border-accent-dark relative flex cursor-pointer items-center justify-center rounded-xl border-3"
+              className="border-accent dark:border-accent-dark relative flex cursor-pointer items-center justify-center rounded-md border-3"
               onClick={ThemeToggle}
             >
               <span
@@ -164,7 +165,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
                   },
                 }}
                 key="label"
-                className={`text-primary pointer-events-none absolute rounded-md px-3 py-1 max-lg:mb-30 lg:ml-65 ${ThemeDark ? "bg-accent-dark" : "bg-accent"}`}
+                className={`text-primary pointer-events-none absolute z-40 rounded-md px-3 py-1 max-lg:mb-30 lg:ml-65 ${ThemeDark ? "bg-accent-dark" : "bg-accent"}`}
               >
                 Theme
               </motion.span>
@@ -173,7 +174,7 @@ const Nav = ({ pathname, ThemeDark, ThemeToggle }) => {
         </div>
 
         <button
-          className="max-xs:block text-accent dark:text-accent-dark absolute right-1 hidden -rotate-90 cursor-pointer rounded-md text-xl"
+          className="max-xs:block text-accent dark:text-accent-dark bg-secondary dark:bg-secondary-dark absolute -top-8 left-0 hidden w-full cursor-pointer rounded-md"
           onClick={() => setNextPage(!NextPage)}
         >
           <FontAwesomeIcon

@@ -23,7 +23,7 @@ export default function ToastProvider({ children }) {
     <ToastContext.Provider value={{ open, close }}>
       {children}
       <div
-        className={`${ThemeDark && "dark"} absolute overflow-hidden w-screen flex-col flex items-end top-5 z-40 gap-2 max-sm:items-center px-5`}
+        className={`${ThemeDark && "dark"} absolute overflow-hidden right-0 flex-col flex items-end top-5 z-40 gap-3 max-sm:items-center px-5`}
       >
         <AnimatePresence>
           {toasts.map(({ id, component }) => (

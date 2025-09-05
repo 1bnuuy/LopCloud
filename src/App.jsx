@@ -6,7 +6,7 @@ import { AnimatePresence, motion } from "motion/react";
 function App() {
   const location = useLocation().pathname;
 
-  const availablePath = ["/", "/todolist", "/dictionary", "/contact"];
+  const availablePath = ["/", "/todolist", "/dictionary", "/bnuuyPanel/dictionary", "/contact"];
   const NoPage = !availablePath.includes(location);
 
   const page = useOutlet(); //useOutlet() finally fixed page transition, not <Outlet />
